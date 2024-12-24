@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('telephones', function (Blueprint $table) {
-            $table->id();
+        Schema::create('need_codes', function (Blueprint $table) {
+            $table->unsignedInteger('code')->primary();
+            $table->string('description');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
+
     }
 
     /**
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('telephones');
+        Schema::dropIfExists('need_codes');
     }
 };

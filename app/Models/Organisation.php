@@ -2,30 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Telephone extends Model
+class Organisation extends Model
 {
-
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory;
-
     /**
      * The attributes that are mass assignable
      */
     protected $fillable = [
-        'customer',
-        'std',
-        'number',
-        'type',
-        'default'
+        'name',
+        'active'
     ];
 
     /**
      * The associated table
      */
-    protected $table = 'telephones';
+    protected $table = 'organisations';
 
     /**
      * The primary key
@@ -36,16 +28,18 @@ class Telephone extends Model
      * The values that should be cast as specific types
      */
     protected $casts = [
-        'default' => 'boolean'
+        'active' => 'boolean'
     ];
 
     /**
      * Functions for relationships
      */
-    // Returns the customer
-    public function customer() {
-        return $this->belongsTo(Customer::class);
+    // Return customers needs
+    public function responsible_for() {
+        return $this->hasManyThrough(Property::class, Responsibility::class);
     }
 
-
+    public function representatives() {
+        return $this->hasMany(Representative::class);
+    }
 }
