@@ -11,8 +11,9 @@ class Service extends Model
      * The attributes that are mass assignable
      */
     protected $fillable = [
-        'customer',
+        'registration_id',
         'code',
+        'active',
         'lastupdate_id',
         'lastupdate_type'
     ];
@@ -34,13 +35,20 @@ class Service extends Model
      * Functions for relationships
      */
     // Returns the customers with this code
-    public function customer() {
-        return $this->hasMany(Customer::class);
+    public function customers() {
+        return $this->hasManyThrough(
+            Customer::class,            // Destination table
+            Registration::class,        // Intermediate table
+            'id',                        // FK on the Intermediate table
+            'id',                    // FK on the Destination table
+            'registration_id',         // Local Key on Parent table
+            'customer'           // Local Key on the Intermediate table
+        );
     }
 
     // Return the details of the Service Code
     public function description() {
-        return $this->belongsTo(ServiceCode::class);
+        return $this->belongsTo(ServiceCode::class, 'code', 'code');
     }
 
     /**

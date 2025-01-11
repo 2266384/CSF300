@@ -36,7 +36,14 @@ class Organisation extends Model
      */
     // Return customers needs
     public function responsible_for() {
-        return $this->hasManyThrough(Property::class, Responsibility::class);
+        return $this->hasManyThrough(
+            Property::class,
+            Responsibility::class,
+            'organisation',
+            'occupier',
+            'id',
+            'id'
+        );
     }
 
     public function representatives() {

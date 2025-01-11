@@ -48,7 +48,17 @@ class ServiceCode extends Model
      */
     // Returns the customers with this Service Code
     public function customers() {
-        return $this->hasManyThrough(Customer::class, Service::class, 'code', 'id', 'id', 'service_id');
+        return $this->hasManyThrough(
+            Registration::class,
+            Service::class,
+            'code',
+            'id',
+            'code',
+            'registration_id');
+    }
+
+    public function actions() {
+        return $this->morphMany(Action::class, 'sourcecode', 'sourcecode_type', 'sourcecode', 'code');
     }
 
 }

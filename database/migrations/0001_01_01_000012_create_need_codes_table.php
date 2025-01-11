@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('need_codes', function (Blueprint $table) {
-            $table->unsignedInteger('code')->primary();
+            $table->string('code')->primary();
             $table->string('description');
             $table->boolean('active')->default(true);
             $table->timestamps();

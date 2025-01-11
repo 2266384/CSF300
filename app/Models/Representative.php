@@ -63,11 +63,11 @@ class Representative extends Authenticatable
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
     public function updatedneeds() {
-        return $this->morphMany(Need::class, 'lastupdate', 'lastupdate_type', 'lastupdate_id');
+        return $this->morphMany(Need::class, 'lastupdate', 'lastupdate_type', 'lastupdate_id', 'id');
     }
 
     public function updatedservices() {
-        return $this->morphMany(Service::class, 'lastupdate', 'lastupdate_type', 'lastupdate_id');
+        return $this->morphMany(Service::class, 'lastupdate', 'lastupdate_type', 'lastupdate_id', 'id');
     }
 
 

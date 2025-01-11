@@ -43,7 +43,19 @@ class NeedCode extends Model
      */
     // Returns the customers with this Need Code
     public function customers() {
-        return $this->hasManyThrough(Customer::class, Need::class, 'code', 'id', 'id', 'need_id');
+        return $this->hasManyThrough(
+            Registration::class,
+            Need::class,
+            'code',
+            'id',
+            'code',
+            'registration_id'
+        );
+    }
+
+
+    public function actions() {
+        return $this->morphMany(Action::class, 'sourcecode', 'sourcecode_type', 'sourcecode', 'code');
     }
 
 }

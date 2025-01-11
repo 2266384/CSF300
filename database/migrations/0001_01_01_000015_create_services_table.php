@@ -12,16 +12,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('needs', function (Blueprint $table) {
+        Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('customer');
-            $table->unsignedInteger('code');
+            $table->unsignedBigInteger('registration_id');
+            $table->string('code');
+            $table->boolean('active')->default(true);
             $table->unsignedBigInteger('lastupdate_id');
             $table->string('lastupdate_type');
 
-            $table->foreign('customer')->references('id')->on('customers');
-            $table->foreign('code')->references('code')->on('need_codes');
-
+            $table->foreign('registration_id')->references('id')->on('registrations');
+            $table->foreign('code')->references('code')->on('service_codes');
 
         });
 
@@ -31,7 +31,7 @@ return new class extends Migration
          */
         // Create the Valid_From and Valid_To columns for recording updates
         DB::statement("
-            ALTER TABLE needs
+            ALTER TABLE services
             ADD
                 valid_from datetime2(2) GENERATED ALWAYS AS ROW START NOT NULL DEFAULT GETUTCDATE(),
                 valid_to datetime2(2) GENERATED ALWAYS AS ROW END NOT NULL DEFAULT CONVERT(datetime2(2), '9999-12-31 23:59:59.9999999'),
@@ -40,8 +40,8 @@ return new class extends Migration
 
         // Turn on System Versioning
         DB::statement("
-            ALTER TABLE needs
-            SET (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.needs_history))
+            ALTER TABLE services
+            SET (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.services_history))
         ");
     }
 
@@ -51,8 +51,8 @@ return new class extends Migration
     public function down(): void
     {
         // Turn off System Versioning
-        DB::statement("ALTER TABLE needs SET (SYSTEM_VERSIONING = OFF)");
-        Schema::dropIfExists('needs');
-        Schema::dropIfExists('needs_history');
+        DB::statement("ALTER TABLE services SET (SYSTEM_VERSIONING = OFF)");
+        Schema::dropIfExists('services');
+        Schema::dropIfExists('services_history');
     }
 };

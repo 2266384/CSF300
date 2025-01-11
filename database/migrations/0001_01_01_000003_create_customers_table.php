@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('SAP_reference')->nullable();
             $table->string('primary_title');
             $table->string('primary_forename');
             $table->string('primary_surname');

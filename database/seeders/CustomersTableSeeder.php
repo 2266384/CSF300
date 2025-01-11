@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Customer;
+use App\Models\Registration;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -96,6 +97,28 @@ class CustomersTableSeeder extends Seeder
         Customer::factory($D)->primaryDoB()->secondary()->create();
         Customer::factory($E)->secondary()->secondaryDoB()->create();
         Customer::factory($F)->primaryDoB()->secondary()->secondaryDoB()->create();
+
+
+        /**
+         * Add some random customers to the Registration Table
+         */
+        for ($i = 0; $i < 100; $i++) {
+
+            // Get a random customer id
+            $customer = Customer::inRandomOrder()->first()->id;
+
+            // Check if the customer already has a registration
+            $hasRegistration = Registration::where('customer', $customer)
+                ->where('active', true)
+                ->exists();
+
+            $registration = new Registration();
+            $registration->customer = $customer;
+            $registration->recipient_name = fake()->name;
+            $registration->source = 1;
+            $registration->active = !$hasRegistration;
+            $registration->save();
+        }
 
     }
 }
