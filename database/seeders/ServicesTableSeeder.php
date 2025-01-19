@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Customer;
+use App\Models\Registration;
 use App\Models\Service;
 use App\Models\Representative;
 use App\Models\User;
@@ -18,7 +18,7 @@ class ServicesTableSeeder extends Seeder
     {
         // Service with Representative update
         $service = new Service();
-        $service->customer = Customer::all()->random()->id;
+        $service->registration_id = Registration::all()->random()->id;
         $service->code = '16P';
         $service->lastupdate_id = 2;
         $service->lastupdate_type = Representative::class;
@@ -26,7 +26,7 @@ class ServicesTableSeeder extends Seeder
 
         // Service with User update
         $service = new Service();
-        $service->customer = Customer::all()->random()->id;
+        $service->registration_id = Registration::all()->random()->id;
         $service->code = 'FBR';
         $service->lastupdate_id = 1;
         $service->lastupdate_type = User::class;

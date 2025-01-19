@@ -12,8 +12,9 @@ class Need extends Model
      * The attributes that are mass assignable
      */
     protected $fillable = [
-        'customer',
+        'registration_id',
         'code',
+        'active',
         'lastupdate_id',
         'lastupdate_type'
     ];
@@ -38,12 +39,19 @@ class Need extends Model
      */
     // Returns the customers with this code
     public function customers() {
-        return $this->hasMany(Customer::class, 'id', 'customer');
+        return $this->hasManyThrough(
+            Customer::class,                // Destination table
+            Registration::class,           // Intermediate table
+            'id',                          // FK on the Intermediate table
+            'id',                       // FK on the Destination table
+            'registration_id',            // Local Key on Parent table
+            'customer'              // Local Key on the Intermediate table
+        );
     }
 
     // Return the details of the Need Code
     public function description() {
-        return $this->belongsTo(NeedCode::class, 'code');
+        return $this->belongsTo(NeedCode::class, 'code', 'code');
     }
 
     /**

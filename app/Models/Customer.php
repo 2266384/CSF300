@@ -3,10 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\Relationship;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Customer extends Model
 {
+
+    use Searchable;
+    /**
+     * Searchable elements
+     */
+    public function toSearchableArray() {
+        return [
+            'id' => $this->id,
+            'sapref' => $this->SAP_reference,
+            'primary_forename' => $this->primary_forename,
+            'primary_surname' => $this->primary_surname,
+            'secondary_forename' => $this->secondary_forename,
+            'secondary_surname' => $this->secondary_surname,
+        ];
+    }
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -15,6 +32,7 @@ class Customer extends Model
      * The attributes that are mass assignable
      */
     protected $fillable = [
+        'SAP_reference',
         'primary_title',
         'primary_forename',
         'primary_surname',
@@ -48,12 +66,30 @@ class Customer extends Model
      */
     // Return customers needs
     public function needs() {
-        return $this->hasMany(Need::class,'customer');
+        return $this->hasManyThrough(
+            Need::class,
+            Registration::class,
+            'customer',
+            'registration_id',
+            'id',
+            'id'
+        );
     }
 
     // Return customers services
     public function services() {
-        return $this->hasMany(Service::class, 'customer');
+        return $this->hasManyThrough(
+            Service::class,
+            Registration::class,
+            'customer',
+            'registration_id',
+            'id',
+            'id'
+        );
+    }
+
+    public function registrations() {
+        return $this->hasMany(Registration::class, 'customer' );
     }
 
     // Return customers properties
@@ -70,5 +106,6 @@ class Customer extends Model
     public function telephones() {
         return $this->hasMany(Telephone::class);
     }
+
 
 }

@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('need_codes', function (Blueprint $table) {
-            $table->unsignedInteger('code')->primary();
-            $table->string('description');
+        Schema::create('sources', function (Blueprint $table) {
+            $table->id();
+            $table->string('source');
             $table->boolean('active')->default(true);
             $table->timestamps();
         });
-
     }
 
     /**
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('need_codes');
+        Schema::dropIfExists('sources');
     }
 };

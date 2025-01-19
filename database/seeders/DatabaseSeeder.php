@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     {
 
         $this->call([UsersTableSeeder::class]);
+        $this->call([SourcesTableSeeder::class]);
         $this->call([CustomersTableSeeder::class]);
         $this->call([TelephonesTableSeeder::class]);
         $this->call([EmailsTableSeeder::class]);
@@ -25,10 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([RepresentativesTableSeeder::class]);
         $this->call([NeedsTableSeeder::class]);
         $this->call([ServicesTableSeeder::class]);
-
-
-        // To do
-        // BUILD CONTROLLERS
+        $this->call([ActionsTableSeeder::class]);
 
     }
 }

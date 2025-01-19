@@ -1,9 +1,132 @@
-// Fonts
-@import url('https://fonts.bunny.net/css?family=Nunito');
-
 // Variables
 @import 'variables';
 
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Fonts
+@font-face {
+    font-family: 'Nunito';
+    src: url('../../public/fonts/Nunito-VariableFont_wght.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+
+$primary-font: 'Nunito';
+
+body {
+    font-family: $primary-font;
+}
+
+:root {
+    --header-height: 5em;
+}
+
+
+/* Page banner */
+.pageheader {
+    height: var(--header-height);
+    width: 100vw !important;
+    background-color: $primary-dwr-blue;
+}
+
+.companylogo img {
+    width: 14em;
+    position: relative;
+    top: -1em;
+}
+
+.apptitle {
+    font-size: xxx-large;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    color: white;
+}
+
+body > header > div > div > div.col-sm-2.login > div > a {
+    padding-top: 1.2em;
+}
+
+.sidebar {
+    background-color: $primary-dwr-blue;
+    color: white;
+    height: calc(100vh - var(--header-height))
+}
+
+.content {
+    padding: 1em;
+}
+
+ul.nav, li.nav, .nav-link {
+    color: rgb(256,256,256,0.8);
+}
+
+ul.nav a:hover, ul.nav a:focus, ul.nav a:active, li.nav a:hover, li.nav a:focus, li.nav a:active {
+    color: white;
+}
+
+.navsearch {
+    --bs-bg-opacity: 0 !important;
+}
+
+.navsearch > form > button {
+    margin-top: 0.5em !important;
+}
+
+.nav-tabs {
+    margin-bottom: 0.25em;
+}
+
+.nav-tabs .nav-link.active, .nav-tabs .nav-link:hover {
+    background-color: $primary-dwr-blue;
+    color: white;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: $secondary-dwr-dark-green;
+    color: white;
+}
+
+.nav-tabs .nav-link {
+    background-color: rgb(175, 175, 175, 1);
+    color: #4a5568;
+}
+
+.btn-primary, .btn-primary.active {
+    background-color: $primary-dwr-blue;
+    border-color: $primary-dwr-blue;
+    color: white;
+}
+
+.btn-success, .btn-success.active {
+    background-color: $secondary-dwr-dark-green;
+    border-color: $secondary-dwr-dark-green;
+    color: white;
+}
+
+// Make the buttons slightly darker when hovering
+.btn:hover  {
+    background-image: linear-gradient(rgb(0 0 0/20%) 0 0);
+}
+
+.attribute-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#flash-container, #flash-message {
+    position: absolute;
+    margin-top: 0.5em;
+    padding: 0;
+    height: 0.4em;
+    line-height: 0.4em;
+}
+
+#edit-registrant,  #cancel-save-customer {
+    padding-top: 0.6em;
+}
