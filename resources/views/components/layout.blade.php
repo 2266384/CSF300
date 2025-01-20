@@ -16,6 +16,8 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
+    @livewireStyles
+
     <title>{{ config('app.name') }}{{ isset($title) ? ' - ' . $title : '' }}</title>
 
 </head>
@@ -56,12 +58,6 @@
                             </form>
                         </ul>
                         @endauth
-                        @guest
-                            <a href="{{route('login')}}" class="d-flex align-items-center text-white text-decoration-none guestlogin">
-                                <img src="{{asset('/images/user.png')}}" alt="profileimage" width="40" height="40" class="rounded-circle">
-                                <span class="d-none d-sm-inline mx-1">Login</span>
-                            </a>
-                        @endguest
                     </div>
 
                 </div>
@@ -72,7 +68,6 @@
     <!-- Main container -->
     <main class="container-fluid">
         <div class="row flex">
-
             <!--
                 Navigation sidebar
                 Only visible if the user is logged in
@@ -88,14 +83,17 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-search"></i> <span class="ms-1 d-none d-sm-inline">Search</span> </a>
-                            <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
+
+                            <ul class="nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                                 <li class="w-100">
                                     <nav class="navbar navbar-light bg-light navsearch">
-                                        <form class="form-inline" method="GET" action="{{ route('customers.index') }}">
-                                            <input class="form-control mr-sm-3" type="text" name="search" placeholder="Search" value="{{ request('search') }}" aria-label="Search">
-                                            <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
+                                        <form class="form-inline" method="GET" action="{{ route('search') }}">
+                                            <div class="input-group">
+                                                <input class="form-control border-end-0 border" type="search" name="search" placeholder="Search" value="{{ session('searchQuery', '') }}" aria-label="Search">
+                                                <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border ms-n5" type="submit">
+                                                    <i class="bi bi-search"></i>
+                                                </button>
+                                            </div>
                                         </form>
                                     </nav>
                                 </li>
@@ -105,19 +103,20 @@
                                 <li class="w-100">
                                     <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Create new record</span></a>
                                 </li>
-                                -->
                                 <li>
                                     <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Update record</span></a>
                                 </li>
                                 <li>
                                     <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Actively remove</span></a>
                                 </li>
+                                -->
                             </ul>
                         </li>
                         <li>
                             <a href="#" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-upload"></i> <span class="ms-1 d-none d-sm-inline">Bulk Update</span></a>
                         </li>
+                        @if(Auth::User()->is_admin)
                         <li>
                             <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
                                 <i class="fs-4 bi-tools"></i> <span class="ms-1 d-none d-sm-inline">Admin</span></a>
@@ -130,6 +129,7 @@
                                 </li>
                             </ul>
                         </li>
+                        @endif
                         <li>
                             <a href="#submenu3" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-envelope-at"></i> <span class="ms-1 d-none d-sm-inline">Report an Issue</span> </a>
@@ -158,12 +158,17 @@
                     @endauth
             </div>
 
+            <div class="col-content
+                @auth with-sidebar @endauth
+                @guest no-sidebar @endguest">
                 <div id="flash-container">
                     @include('flashmessage')
                     @yield('content')
                 </div>
 
                 {{ $slot }}
+            </div>
+
 
 
             <!-- DataTables CSS -->
@@ -176,6 +181,8 @@
             <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
 
             @stack('scripts')
+
+            @livewireScripts
 
             <!-- timeout for flash messages -->
             <script>

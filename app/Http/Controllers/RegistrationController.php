@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Models\Need;
 use App\Models\Registration;
-use App\Models\Service;
 use App\Models\Source;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class RegistrationController extends Controller
@@ -52,6 +51,20 @@ class RegistrationController extends Controller
                 'removed_date' => $request['removed_date'],
                 'recipient_name' => $request['recipient_name'],
                 'arrayData' => $arrayData,
+                /* Create booleans to check if we have any temp changes - required_if doesn't seem to function
+                using an array of data */
+                'tlc' => collect($arrayData)->contains(function ($item) {
+                    return isset($item['description']) && $item['description'] === 'Temporary - Life changes';
+                }),
+                'phr' => collect($arrayData)->contains(function ($item) {
+                    return isset($item['description']) && $item['description'] === 'Temporary - Post hospital recovery';
+                }),
+                'yah' => collect($arrayData)->contains(function ($item) {
+                    return isset($item['description']) && $item['description'] === 'Temporary - Young adult householder(<18)';
+                }),
+                'tlc_date' => $request['tlc_date'],
+                'phr_date' => $request['phr_date'],
+                'yah_date' => $request['yah_date'],
             ];
 
             // Validation rules
@@ -59,24 +72,44 @@ class RegistrationController extends Controller
                 'source' => 'required',
                 'consent_date' => 'nullable|date|after_or_equal:today',
                 'removed_date' => 'nullable|date|after_or_equal:today',
-                'recipient_name' => 'required|max:255',
+                'recipient_name' => 'required|min:5|max:255',
                 'arrayData' => 'required|array|min:1',
+                'tlc_date' => 'nullable|required_if:tlc,true|date|after_or_equal:today',
+                'phr_date' => 'nullable|required_if:phr,true|date|after_or_equal:today',
+                'yah_date' => 'nullable|required_if:yah,true|date|after_or_equal:today',
             ];
 
-            $validator = Validator::make($data, $rules);
+            $messages = [
+                'source.required' => 'The source is required.',
+                'recipient_name.required' => 'Recipient name is required',
+                'recipient_name.min' => 'Recipient name must be at least 5 characters',
+                'recipient_name.max' => 'Recipient name cannot exceed 255 characters',
+                'arrayData.required' => 'The customer must have at least one Need',
+                'tlc_date' => 'Temporary - Life changes must have a date',
+                'phr_date' => 'Temporary - Post hospital recovery must have a date',
+                'yah_date' => 'Temporary - Young adult householder(<18) must have a date',
+            ];
 
-            if($validator->fails()) {
-                throw new \Exception('Validation failed');
+            $validator = Validator::make($data, $rules, $messages);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ],422);
             }
 
 
             // Access regular data from FormData
-            //$sap_bp_ref = $request->input('sap_bp_ref');
             $customer_ref = $request->input('customer_ref');
             $source = $request->input('source');
             $consent_date = $request->input('consent_date');
             $removed_date = $request->input('removed_date');
             $recipient_name = $request->input('recipient_name');
+            $tlcDate = $request->input('tlc_date');
+            $phrDate = $request->input('phr_date');
+            $yahDate = $request->input('yah_date');
 
 
             // Create the new Registration and get the ID
@@ -92,33 +125,38 @@ class RegistrationController extends Controller
             // Get the Customer model and the PSR ID
             $customer = Customer::findorfail($customer_ref);
 
-            $psr_id = $customer->registrations->where('active', '=', 1)
-                ->where('removed_date', '=', null)->first()->id;
+            $psr_id = $customer->registrations->where('active', 1)
+                ->where('removed_date', null)->first()->id;
 
 
             /*
              * Save the Needs and Services to the database against the PSR ID
              * Check for updating user so we can assign the right class to it
              */
-
-            $updateType = User::class;
-
             // Separate all the needs and services
             $needs = collect($arrayData)->where('type', 'need');
             $services = collect($arrayData)->where('type', 'service');
-
-
 
             // Need update
             if($needs->isNotEmpty()) {
 
                 foreach($needs as $need) {
-                    Need::create([
-                        'registration_id' => $psr_id,
-                        'code' => $need['code'],
-                        'lastupdate_id' => 1,
-                        'lastupdate_type' => $updateType,
-                    ]);
+
+                    // Set the tempNeedDate
+                    if($need['code'] == '32') {
+                        $tempEndDate = $tlcDate;
+                    } else if ($need['code'] == '33') {
+                        $tempEndDate = $phrDate;
+                    } else if ($need['code'] == '34') {
+                        $tempEndDate = $yahDate;
+                    } else {
+                        $tempEndDate = null;
+                    }
+
+                    $need['psr_id'] = $psr_id;
+                    $need['temp_end_date'] = $tempEndDate;
+
+                    addAttribute($need);
                 }
             }
 
@@ -127,12 +165,11 @@ class RegistrationController extends Controller
             if($services->isNotEmpty()) {
 
                 foreach($services as $data) {
-                    Service::create([
-                        'registration_id' => $psr_id,
-                        'code' => $data['code'],
-                        'lastupdate_id' => 1,
-                        'lastupdate_type' => $updateType,
-                    ]);
+
+                    $data['psr_id'] = $psr_id;
+                    $data['temp_end_date'] = $tempEndDate;
+
+                    addAttribute($data);
                 }
             }
 
@@ -164,6 +201,7 @@ class RegistrationController extends Controller
 
 
         } catch (\Exception $e) {
+
             // Catch any exceptions and return an error response
             return response()->json([
                 'error' => 'An error occurred while processing the request.',

@@ -20,6 +20,7 @@ class ServicesTableSeeder extends Seeder
         $service = new Service();
         $service->registration_id = Registration::all()->random()->id;
         $service->code = '16P';
+        $service->temp_end_date = null;
         $service->lastupdate_id = 2;
         $service->lastupdate_type = Representative::class;
         $service->save();
@@ -28,6 +29,7 @@ class ServicesTableSeeder extends Seeder
         $service = new Service();
         $service->registration_id = Registration::all()->random()->id;
         $service->code = 'FBR';
+        $service->temp_end_date = null;
         $service->lastupdate_id = 1;
         $service->lastupdate_type = User::class;
         $service->save();

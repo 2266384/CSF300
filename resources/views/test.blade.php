@@ -1,13 +1,12 @@
-@inject('attributesservice', 'App\Services\AttributeService')
+@php
+    $customer = App\Models\Customer::findorfail(735);
 
 
-<ul>
-    @foreach($attributesservice->attributesWithActions() as $att)
-    <li>
-        {{ $att['index'] }}
-        {{ $att['code'] }}
-        {{ $att['action'] }}
-        {{ $att['targetcode'] }}
-    </li>
-    @endforeach
-</ul>
+    @endphp
+<x-layout Title="Test">
+    {{ $customer->customer_names }}
+
+
+    <livewire:attribute-list :parameter="$customer->id"/>
+
+</x-layout>

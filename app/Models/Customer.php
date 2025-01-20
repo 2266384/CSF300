@@ -74,6 +74,7 @@ class Customer extends Model
             'id',
             'id'
         );
+        //->where('active', 1);
     }
 
     // Return customers services
@@ -86,6 +87,7 @@ class Customer extends Model
             'id',
             'id'
         );
+            //->where('active', 1);
     }
 
     public function registrations() {
@@ -107,5 +109,33 @@ class Customer extends Model
         return $this->hasMany(Telephone::class);
     }
 
+
+    /**
+     * Accessor function to return the full concatenated first and second names
+     * from the account
+     * @return string
+     */
+    public function getCustomerNamesAttribute()
+    {
+
+        // Get the individual primary and secondary names
+        $primaryParts = array_filter([
+            'title' => $this->primary_title ?? null,
+            'forename' => $this->primary_forename ?? null,
+            'surname' => $this->primary_surname ?? null
+        ]);
+        $secondaryParts = array_filter([
+            'title' => $this->secondary_title ?? null,
+            'forename' => $this->secondary_forename ?? null,
+            'surname' => $this->secondary_surname ?? null
+        ]);
+
+        // Implode the names to remove NULL values
+        $formattedPrimary = implode(' ', $primaryParts);
+        $formattedSecondary = implode(' ', $secondaryParts);
+
+        // If Name 2 exists concatenate with an & otherwise return Name 1
+        return $formattedSecondary ? $formattedPrimary . ' & ' . $formattedSecondary : $formattedPrimary;
+    }
 
 }

@@ -25,7 +25,7 @@ const saveCustomerButton = document.getElementById('save-customer');
  * @param {string} url - the endpoint to send the form data to
  * @param {HTMLElement} responseMessageElement - the element to display success/error messages
  */
-function submitForm(form, url, responseMessageElement) {
+/*function submitForm(form, url, responseMessageElement) {
 
     const formData=new FormData(form);
 
@@ -38,6 +38,8 @@ function submitForm(form, url, responseMessageElement) {
             console.error(error);
         });
 }
+*/
+
 
 /**
  * Generic function to send POST requests to Laravel Controllers then display the response
@@ -47,7 +49,19 @@ function submitForm(form, url, responseMessageElement) {
  */
 function axiosPost(url, payload) {
 
-    // Send the data to the Registration Controller with the form data and attributes
+    //console.log(url, payload);
+    //debugger;
+
+    // Clear previous errors
+    document.querySelectorAll('.error').forEach(function (el) {
+        el.textContent = '';
+    });
+    document.querySelectorAll('.is-invalid').forEach(function (el) {
+        el.classList.remove('is-invalid');
+    });
+
+
+    // Send the data to the URL with the payload
     axios.post(url, payload)
 
         .then(response => {
@@ -64,18 +78,60 @@ function axiosPost(url, payload) {
         })
         .catch(error => {
 
-            //console.error('Error:', error);
-            //debugger;
+            console.log(error.response.data.errors);
 
-            // Save the error flash message
-            saveFlashMessage(error.response.data.details, 'danger');
+            if (error.response && error.response.status === 422) {
+                // Get the validation errors
+                const errors = error.response.data.errors;
 
-            // Reload the window to display the message
-            window.location = window.location;
+                // Update the error fields
+                Object.keys(errors).forEach(function (key) {
+                    const errorSpan = document.getElementById(`${key}-error`);
+                    if (errorSpan) {
+                        errorSpan.textContent = errors[key][0]; // Show the first error message
+                    }
 
+                    const inputField = document.querySelector(`[name="${key}"]`);
+                    //console.log(inputField);
+                    if (inputField) {
+                        inputField.classList.add('is-invalid');
+                    }
+
+                });
+
+            } else {
+
+                //console.error('Error:', error);
+                //debugger;
+
+                // Save the error flash message
+                saveFlashMessage(error.response?.data?.message
+                    || 'An unexpected error occurred.', 'danger');
+
+                // Reload the window to display the message
+                window.location = window.location;
+
+            }
         });
 
 }
+
+/*
+function displayValidationErrors(errors) {
+
+    // Clear any previous errors
+    document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+    // Display new errors
+    for (const [field, messages] of Object.entries(errors)) {
+        const errorElement = document.querySelector(`#${field}-error`);
+        if (errorElement) {
+            errorElement.textContent = messages.join(', ');
+        }
+    }
+}
+*/
+
 
 
 /**
@@ -141,6 +197,9 @@ function registrantDetails() {
     // Get the Registrant Form Data and the list of selected attributes
     const registrantData = new FormData(registrantForm);
     const attributeData = currentList.options;
+    let tlcDate = document.getElementById('tlc').value;
+    let phrDate = document.getElementById('phr').value;
+    let yahDate = document.getElementById('yah').value;
 
     // Create an empty array of the attributes
     let parsedAttributes = [];
@@ -148,21 +207,31 @@ function registrantDetails() {
     // Add the JSON data to the parsedAttributes array with the text value inserted
     Array.from(attributeData).forEach((option, index) => {
         let optionData = JSON.parse(option.value);
-        optionData = {...optionData, description: option.text}
+
+        optionData = {
+            ...optionData,
+            description: option.text,
+        }
         parsedAttributes.push(optionData);
     });
 
+
     // Append the attribute data array to the form data
     registrantData.append('arrayData', JSON.stringify(parsedAttributes));
+    registrantData.append('tlc_date', tlcDate);
+    registrantData.append('phr_date', phrDate);
+    registrantData.append('yah_date', yahDate);
 
-    /*
+/*
+    console.log(registrantData.entries);
+
     // Output the form data to the console
     for (const pair of registrantData.entries()) {
         console.log(pair[0], pair[1]);
     }
-    */
 
-    //debugger;
+    debugger;
+*/
 
     return registrantData
 
@@ -177,39 +246,14 @@ function registrantDetails() {
 export function saveRegistrant() {
 
     // Call the function to get the details
-    const registrantData = registrantDetails()
+    const registrantData = registrantDetails();
+
+//    console.log(registrantData.entries);
+//    debugger;
 
     // Send the data to the Registration Controller with the form data and attributes
     axiosPost('/registrations-store', registrantData);
 
-    /*
-    // Send the data to the Registration Controller with the form data and attributes
-    axios.post('/registrations-store', registrantData)
-        .then(response => {
-
-            // Save the flash message
-            saveFlashMessage(response.data.message, 'success');
-
-            //console.log(response.data.redirect_url);
-
-            // Redirect to the URL provided by Laravel
-            window.location.href = response.data.redirect_url;
-
-        })
-        .catch(error => {
-
-            //console.error('Error:', error);
-
-            //debugger;
-
-            // Save the error flash message
-            saveFlashMessage(error.response.data.details, 'danger');
-
-            // Reload the window to display the message
-            window.location = window.location;
-
-        });
-    */
 }
 
 
@@ -224,22 +268,6 @@ export function saveCustomer() {
 
     axiosPost('/customer-update', registrantData);
 
-/*
-    // Send the data to the Registration Controller with the form data and attributes
-    axios.post('/customer-update', registrantData)
-        .then(response => {
-            console.log(response.data);
-
-            //const data = response.data
-
-            //alert(data.join('\n'));
-            alert(response.data.message);
-        })
-        .catch(error => {
-            console.error(error.response.data);
-        });
-*/
-
 }
 
 
@@ -249,8 +277,10 @@ export function saveCustomer() {
  * Function to call the update attribute processes
  * @param {HTMLFormElement} list - the list containing the data
  */
-//export async function updateAttribute(list) {
-export function updateAttribute(list) {
+
+export async function updateAttribute(list) {
+
+debugger;
 
     let fromList;
     let toList;
@@ -275,290 +305,55 @@ export function updateAttribute(list) {
     // Build a new option to add to the list we're passing to
     const newOption = document.createElement("option");
 
-    let filteredArray = [];
 
     // Update our list values based on the selected code and action
     if (parsedData.action === "add") {
 
-        //const list = document.getElementById("current-attributes-list");
         // Add code to the selected list and update the action to Remove
-        newOption.value = '{"sort":'.concat(parsedData.sort, ',"code":"',parsedData.code, '","type":"', parsedData.type, '","action":"remove"}');
+        newOption.value = '{"sort":'.concat(parsedData.sort, ',"code":"',parsedData.code, '","type":"', parsedData.type, '","state":"', parsedData.state, '","action":"remove"}');
         newOption.text = selectedText;
         toList.appendChild(newOption);
 
-//        console.log(parsedData.code);
-/*
-        // Get all the available actions from our Attribute Controller
-        const codeArray = await fetchActions();
-
-        // Filter the array to match the current code
-        codeArray.forEach(item => {
-            if (item.code === parsedData.code) {
-                filteredArray.push(item);
-            }
-        });
-*/
-        //console.log(filteredArray);
-
-
+        // Remove the code
+        const optionToRemove = fromList.options[selectedIndex]
+        fromList.removeChild(optionToRemove)
 
     } else if (parsedData.action === "remove") {
-        // Add code to the selected list and update the action to Add
-        newOption.value = '{"sort":'.concat(parsedData.sort, ',"code":"',parsedData.code, '","type":"', parsedData.type, '","action":"add"}');
+        // Add code to the available list and update the action to Add
+        newOption.value = '{"sort":'.concat(parsedData.sort, ',"code":"',parsedData.code, '","type":"', parsedData.type, '","state":"', parsedData.state, '","action":"add"}');
         newOption.text = selectedText;
         toList.appendChild(newOption);
-/*
-        // Get all the available actions from our Attribute Controller
-        const codeArray = await fetchActions();
 
-        // Filter the array to match the current code
-        codeArray.forEach(item => {
-            if (item.code === parsedData.code) {
-                filteredArray.push(item);
-            }
-        });
-*/
+        // Remove the code
+        const optionToRemove = fromList.options[selectedIndex]
+        fromList.removeChild(optionToRemove)
+
     }
-
 
     /**
      * Load the toList options into an array so we can update whether they
      * are Disabled or not and sort them into the correct order based on the
      * Index value
      */
-    let optionsArray = Array.from(toList.options);
-
-/*
-    optionsArray.forEach(item => {
-        console.log(item);
-    });
-
-    optionsArray =  optionsArray.map(item => {
-        let obj = JSON.parse(item);
-
-        console.log(obj);
-
-    })
-    let optionsArray = await updateOptions(filteredArray);
-
-*/
+    let optionsArray = await updateOptions();
 
     optionsArray.sort((a, b) => {
-        const aData = JSON.parse(a.value);
-        const bData = JSON.parse(b.value);
-
-        return aData.sort - bData.sort;
+        return a.sort - b.sort;
     });
 
-    toList.innerHTML = "";
+    availableList.innerHTML = "";
 
-    optionsArray.forEach(option => toList.appendChild(option));
+    optionsArray.forEach(o => {
+        const option = document.createElement("option");
+        option.value = JSON.stringify(o);
+        option.text = o.text;
+        availableList.appendChild(option);
+    });
 
-    updateOptions();
-    //console.log(optionsArray);
-
-    const optionToRemove = fromList.options[selectedIndex]
-    fromList.removeChild(optionToRemove)
-
-    //console.log(parsedData.sort);
 }
 
 
 
-// Subroutine to fetch data
-async function fetchActions() {
-    try {
-        // Fetch data using Axios
-        const response = await axios.get('/actions');
-
-        //console.log(response.data.first);
-        // Return the fetched data as an array
-        return response.data; // Return filtered array
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return []; // Return an empty array if there is an error
-    }
-}
-
-
-async function updateOptions() {
-
-    /**
-     * Load the toList options into an array so we can update whether they
-     * are Disabled or not and sort them into the correct order based on the
-     * Index value
-     */
-
-    // Get all the available actions from our Attribute Controller
-    const actionArray = await fetchActions();
-
-
-    // Create an Array of all available attributes in the list
-    const availableList = document.getElementById("available-attribute-list");
-    let availableArray = Array.from(availableList.options);
-
-    const selectedList = document.getElementById("current-attributes-list");
-    let selectedArray = Array.from(selectedList.options);
-
-    // Get the actions for the selected attributes
-    let selectedActions = [];
-
-    selectedArray.forEach(selected => {
-
-        const s = JSON.parse(selected.value);
-
-        // Filter the actionArray to only the Selected attributes
-        actionArray.forEach(action => {
-
-            if (action.sourcecode === s.code) {
-
-                selectedActions.push(action);
-            }
-
-        });
-
-    });
-
-    //console.log(selectedActions);
-
-    // Set the default an empty array to hold the data
-    let updatedOptions = [];
-
-    // Iterate through the available options and update the state
-    availableArray.forEach(option => {
-        const a = JSON.parse(option.value);
-        console.log(a);
-
-        // Set the default state
-        let state;
-
-        if(a.type === 'need') {
-            state = 'enabled';
-        } else {
-            state = 'disabled';
-        }
-
-        selectedActions.forEach( action => {
-
-            // Matching code, both Needs, disable action
-            if(action.targetcode === a.code
-                && a.type === action.type
-                && action.action === 'disabled') {
-
-            // Matching code, type service, action need, enable action
-            } else if (action.targetcode === a.code
-                && a.type !== action.type
-                && action.action === 'enabled')
-            console.log(action.targetcode);
-        })
-
-    })
-
-    // Iterate through the current options
-    availableArray.forEach(option => {
-        const opt = JSON.parse(option.value)
-        //console.log(opt.code);
-
-
-        actionArray.filter(action => {
-
-            //console.log('Target Code: ' + action.targetcode);
-            //console.log('Option Code: ' + opt.code);
-
-            if( action.targetcode === opt.code) {
-//                console.log(action.targetcode + ' : ' + opt.code);
-            }
-        })
-
-    })
-
-
-
-
-
-    actionArray.forEach(action => {
-        //const b = JSON.parse(action);
-        //console.log(action);
-    })
-
-/*
-    actionArray.map(item => {
-        console.log(item);
-    })
-
-    optionsArray.forEach(option => {
-        const a = JSON.parse(option.value);
-        console.log(a);
-    })
-    // Default our state to enabled
-    let state = 'enabled'
-
-    // Iterate through the current options
-    availableArray.forEach(option => {
-        const opt = JSON.parse(option.value)
-        //console.log(opt.code);
-
-
-        actionArray.filter(action => {
-
-            //console.log('Target Code: ' + action.targetcode);
-            //console.log('Option Code: ' + opt.code);
-
-            if( action.targetcode === opt.code) {
-//                console.log(action.targetcode + ' : ' + opt.code);
-            }
-        })
-
-    })
-
-*/
-
-/*
-    let mergedArray = actionArray.map(action => {
-
-        console.log(action);
-
-        let match = optionsArray.map(option => {
-            if (option.code === action.targetcode) {
-                return {
-                    ...action,
-                    ...option,
-                };
-            }
-            return null;
-        }).filter(a => a !== null);
-
-        return match.length > 0 ? match[0] : action;
-    });
-*/
-
-/*
-    let mergedArray = optionsArray.map(item1 => {
-        let match = actionArray.map(action => {
-            if (action.targetcode === item1.code) {
-                return {
-                    ...item1.sort,
-                    ...item1.code,
-                    ...item1.type,
-                    //state: if(...item1.state = 'enabled' && action.action = 'Disable') { 'disabled'} else { 'enabled' }
-                    ...item1.action,
-                    };
-            }
-            return null;
-        }).filter(a => a !== null);
-
-        return match.length > 0 ? match[0] : item1;
-    });
-*/
-
-
-/*
-    mergedArray.forEach(option => {
-        console.log(option.value);
-    })
-*/
-
-}
 
 
 
@@ -572,12 +367,13 @@ function initializeFormHandlers() {
     const form = document.getElementById('userForm');
 
     // Attach submit button handler
-    if (submitButton && form && responseMessage) {
+/*    if (submitButton && form && responseMessage) {
         submitButton.addEventListener('click', () => {
             submitForm(form, '/submit-data', responseMessage);
         });
     }
-
+*/
+/*
     if (addButton && addForm) {
         addButton.addEventListener('click', ()=>{
             updateAttribute(availableList);
@@ -589,6 +385,7 @@ function initializeFormHandlers() {
             updateAttribute(currentList) ;
         })
     }
+*/
 
     if (saveRegistrantButton) {
         saveRegistrantButton.addEventListener('click', ()=>{

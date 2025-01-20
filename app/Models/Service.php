@@ -13,6 +13,7 @@ class Service extends Model
     protected $fillable = [
         'registration_id',
         'code',
+        'temp_end_date',
         'active',
         'lastupdate_id',
         'lastupdate_type'
