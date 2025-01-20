@@ -16,7 +16,7 @@ class AttributeService {
      * a unique index value
      * @return array allcodesWithIndex
      */
-    function indexedAttributes() {
+    public function indexedAttributes() {
 
         // Get the Needs and Services and merge them into an array
         $needs = Collect(NeedCode::all()
@@ -76,6 +76,7 @@ class AttributeService {
                 'index' => $indexValue['index'],
                 'code' => $need->code,
                 'description' => $need->description->description,
+                'temp_end_date' => $need->temp_end_date,
                 'valid_from' => $need->valid_from,
                 'valid_to' => $need->valid_to,
                 'type' => 'need',
@@ -96,6 +97,7 @@ class AttributeService {
                 'index' => $indexValue['index'],
                 'code' => $service->code,
                 'description' => $service->description->description,
+                'temp_end_date' => $service->temp_end_date,
                 'valid_from' => $service->valid_from,
                 'valid_to' => $service->valid_to,
                 'type' => 'service',
@@ -123,12 +125,13 @@ class AttributeService {
             ->join('need_codes', 'need_codes.code', '=', 'needs_history.code')
             ->where('needs_history.registration_id', $registration)
             ->where('needs_history.active', 1)
-            ->select('need_codes.code', 'need_codes.description', 'needs_history.valid_from', 'needs_history.valid_to')
+            ->select('need_codes.code', 'need_codes.description', 'needs_history.temp_end_date', 'needs_history.valid_from', 'needs_history.valid_to')
             ->get()
         )->map(function ($need) {
             return [
                 'code' => $need->code,
                 'description' => $need->description,
+                'temp_end_date' => $need->temp_end_date,
                 'valid_from' => $need->valid_from,
                 'valid_to' => $need->valid_to,
                 'type' => 'need',
@@ -142,12 +145,13 @@ class AttributeService {
             ->join('service_codes', 'service_codes.code', '=', 'services_history.code')
             ->where('services_history.registration_id', $registration)
             ->where('services_history.active', 1)
-            ->select('service_codes.code', 'service_codes.description', 'services_history.valid_from', 'services_history.valid_to')
+            ->select('service_codes.code', 'service_codes.description', 'services_history.temp_end_date', 'services_history.valid_from', 'services_history.valid_to')
             ->get()
         )->map(function ($service) {
             return [
                 'code' => $service->code,
                 'description' => $service->description,
+                'temp_end_date' => $service->temp_end_date,
                 'valid_from' => $service->valid_from,
                 'valid_to' => $service->valid_to,
                 'type' => 'service',

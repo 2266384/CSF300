@@ -3,10 +3,10 @@
 
         <div class="d-flex">
             <div class="p2 flex-grow-1">
-                <H2>{{$customer->primary_title . ' ' . $customer->primary_forename . ' ' . $customer->primary_surname }}</H2>
+                <H2>{{ $customer->customer_names }}</H2>
             </div>
-            <button type="submit" id="save-customer" class="btn col-md-1 m-1 btn-success">Save</button>
-            <a href="{{route('customers.show', $customer)}}" id="cancel-save-customer" class="btn col-md-1 m-1 btn-warning">Cancel</a>
+            <button type="submit" id="save-customer" class="btn p-0 border-0 bg-transparent" title="Save Update"><i class="bi bi-floppy fs-2"></i></button>
+            <a href="{{route('customers.show', $customer)}}" id="cancel-save-customer" title="Cancel Update"><i class="bi bi-x-square-fill fs-2"></i></a>
         </div>
 
 

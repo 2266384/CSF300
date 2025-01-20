@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('registration_id');
             $table->string('code');
+            $table->string('temp_end_date',)->nullable();
             $table->boolean('active')->default(true);
             $table->unsignedBigInteger('lastupdate_id');
             $table->string('lastupdate_type');
@@ -29,21 +30,27 @@ return new class extends Migration
         /**
          * Use DB functions to turn the table into a System Versioned table and create the
          * linked history table
+         * The command should only run when we're connecting to the PROD database (MS SQL)
          */
-        // Create the Valid_From and Valid_To columns for recording updates
-        DB::statement("
-            ALTER TABLE needs
-            ADD
-                valid_from datetime2(2) GENERATED ALWAYS AS ROW START NOT NULL DEFAULT GETUTCDATE(),
-                valid_to datetime2(2) GENERATED ALWAYS AS ROW END NOT NULL DEFAULT CONVERT(datetime2(2), '9999-12-31 23:59:59.9999999'),
-                PERIOD FOR SYSTEM_TIME (valid_from, valid_to)
-        ");
 
-        // Turn on System Versioning
-        DB::statement("
-            ALTER TABLE needs
-            SET (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.needs_history))
-        ");
+        $db_type = DB::connection()->getDriverName();
+
+        if ($db_type === 'sqlsrv') {
+            // Create the Valid_From and Valid_To columns for recording updates
+            DB::statement("
+                ALTER TABLE needs
+                ADD
+                    valid_from datetime2(2) GENERATED ALWAYS AS ROW START NOT NULL DEFAULT GETUTCDATE(),
+                    valid_to datetime2(2) GENERATED ALWAYS AS ROW END NOT NULL DEFAULT CONVERT(datetime2(2), '9999-12-31 23:59:59.9999999'),
+                    PERIOD FOR SYSTEM_TIME (valid_from, valid_to)
+            ");
+
+            // Turn on System Versioning
+            DB::statement("
+                ALTER TABLE needs
+                SET (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.needs_history))
+            ");
+        }
     }
 
     /**

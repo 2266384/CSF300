@@ -2,7 +2,8 @@
 
     <div class="col content">
 
-        <H3>Search for customer:</H3>
+        <H3>Dashboard:</H3>
+        <!--
         <form class="form-inline" method="GET" action="{{ route('search') }}">
             <div class="row">
 
@@ -15,6 +16,6 @@
 
             </div>
         </form>
-
+        -->
     </div>
 </x-layout>

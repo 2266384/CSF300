@@ -31,12 +31,26 @@ return new class extends Migration
 
         /**
          * Add a UNIQUE CONSTRAINT on the table so we can only have one ACTIVE = 1 record
+         * The command changes depending on whether we're connecting to the PROD database (MS SQL)
+         *  or the TEST database (MySQL)
          */
-        DB::statement("
-            CREATE UNIQUE NONCLUSTERED INDEX UQ_registrations_customer_active
-            ON registrations(customer, active)
-            WHERE active = 1;
-        ");
+
+        $db_type = DB::connection()->getDriverName();
+
+        if ($db_type === 'sqlsrv') {
+            DB::statement("
+                CREATE UNIQUE NONCLUSTERED INDEX UQ_registrations_customer_active
+                ON registrations(customer, active)
+                WHERE active = 1;
+            ");
+/*        } else if ($db_type === 'mysql') {
+            DB::statement("
+                ALTER TABLE registrations
+                ADD active_customer_condition INT GENERATED ALWAYS AS (CASE WHEN active = 1 THEN customer ELSE NULL END) STORED,
+                ADD UNIQUE INDEX UQ_registrations_customer_active (active_customer_condition)");
+*/
+        }
+
 
 
     }

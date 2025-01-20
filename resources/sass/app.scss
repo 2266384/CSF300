@@ -23,14 +23,18 @@ body {
 
 :root {
     --header-height: 5em;
+    --navbar-width: 250px;
 }
 
 
 /* Page banner */
 .pageheader {
+    position: fixed;
+    z-index: 1000 !important;
     height: var(--header-height);
     width: 100vw !important;
     background-color: $primary-dwr-blue;
+    margin-top: -20px;
 }
 
 .companylogo img {
@@ -54,11 +58,21 @@ body > header > div > div > div.col-sm-2.login > div > a {
 .sidebar {
     background-color: $primary-dwr-blue;
     color: white;
-    height: calc(100vh - var(--header-height))
+    height: calc(100vh - var(--header-height) + 25px);
+    position: fixed;
+    width: var(--navbar-width);
+}
+
+
+.no-sidebar .content {
+    margin-left: 0;
+    width: 100%;
 }
 
 .content {
     padding: 1em;
+    margin-left: var(--navbar-width);
+    margin-top: calc(var(--header-height) - 15px);
 }
 
 ul.nav, li.nav, .nav-link {
@@ -127,6 +141,40 @@ ul.nav a:hover, ul.nav a:focus, ul.nav a:active, li.nav a:hover, li.nav a:focus,
     line-height: 0.4em;
 }
 
-#edit-registrant,  #cancel-save-customer {
+#edit-registrant,  #cancel-save-customer, #cancel-save-registration {
     padding-top: 0.6em;
+}
+
+#tempdates {
+    padding-top: 0.6em;
+}
+
+
+#save-customer, #save-registrant {
+   margin: 0.6em;
+    color: $primary-dwr-blue;
+}
+
+#save-customer > i, #save-registrant > i {
+//    color: $primary-dwr-blue;
+}
+
+#cancel-save-customer > i, #cancel-save-registration > i {
+    color: $secondary-dwr-soft-red;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+}
+
+form > button {
+    width: 3em;
+    margin-top: -0.2em;
+}
+
+form > button > i {
+    color: $primary-dwr-blue;
+}
+
+table.dataTable tbody tr {
+    height: 15px;
+    vertical-align: middle;
 }

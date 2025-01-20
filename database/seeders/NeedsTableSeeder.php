@@ -20,6 +20,7 @@ class NeedsTableSeeder extends Seeder
         $need = new Need();
         $need->registration_id = Registration::all()->random()->id;
         $need->code = '1';
+        $need->temp_end_date = null;
         $need->lastupdate_id = 2;
         $need->lastupdate_type = Representative::class;
         $need->save();
@@ -28,6 +29,7 @@ class NeedsTableSeeder extends Seeder
         $need = new Need();
         $need->registration_id = Registration::all()->random()->id;
         $need->code = '4';
+        $need->temp_end_date = null;
         $need->lastupdate_id = 1;
         $need->lastupdate_type = User::class;
         $need->save();

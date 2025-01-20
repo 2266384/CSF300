@@ -5,10 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Need;
 use App\Models\Registration;
-use App\Models\Service;
 use App\Models\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -73,7 +72,9 @@ class CustomerController extends Controller
      */
     public function update(Request $request)
     {
+
         try {
+
 
             // Decode the array data (sent as JSON string)
             $arrayData = json_decode($request->input('arrayData'), true); // Decode the JSON string into an array
@@ -90,21 +91,52 @@ class CustomerController extends Controller
                 'recipient_name' => $request['recipient_name'],
                 'psr_id' => $request['psr_id'],
                 'arrayData' => $arrayData,
+                /* Create booleans to check if we have any temp changes - required_if doesn't seem to function
+                using an array of data */
+                'tlc' => collect($arrayData)->contains(function ($item) {
+                    return isset($item['description']) && $item['description'] === 'Temporary - Life changes';
+                }),
+                'phr' => collect($arrayData)->contains(function ($item) {
+                    return isset($item['description']) && $item['description'] === 'Temporary - Post hospital recovery';
+                }),
+                'yah' => collect($arrayData)->contains(function ($item) {
+                    return isset($item['description']) && $item['description'] === 'Temporary - Young adult householder(<18)';
+                }),
+                'tlc_date' => $request['tlc_date'],
+                'phr_date' => $request['phr_date'],
+                'yah_date' => $request['yah_date'],
             ];
 
             // Validation rules
             $rules = [
                 'consent_date' => 'nullable|date|after_or_equal:today',
                 'remove_dated' => 'nullable|date|after_or_equal:today',
-                'recipient_name' => 'required|max:255',
+                'recipient_name' => 'required|min:5|max:255',
                 'psr_id' => 'required|numeric',
                 'arrayData' => 'required|array|min:1',
+                'tlc_date' => 'nullable|required_if:tlc,true|date|after_or_equal:today',
+                'phr_date' => 'nullable|required_if:phr,true|date|after_or_equal:today',
+                'yah_date' => 'nullable|required_if:yah,true|date|after_or_equal:today',
             ];
 
-            $validator = Validator::make($data, $rules);
+            $messages = [
+                'recipient_name.required' => 'Recipient name is required',
+                'recipient_name.min' => 'Recipient name must be at least 5 characters',
+                'recipient_name.max' => 'Recipient name cannot exceed 255 characters',
+                'arrayData.required' => 'The customer must have at least one Need',
+                'tlc_date' => 'Temporary - Life changes must have a date',
+                'phr_date' => 'Temporary - Post hospital recovery must have a date',
+                'yah_date' => 'Temporary - Young adult householder(<18) must have a date',
+            ];
+
+            $validator = Validator::make($data, $rules, $messages);
 
             if ($validator->fails()) {
-                throw new \Exception('Validation failed');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ],422);
             }
 
             // Access regular data from FormData
@@ -113,12 +145,16 @@ class CustomerController extends Controller
             $removed_date = $request->input('removed_date');
             $recipient_name = $request->input('recipient_name');
             $psr_id = $request->input('psr_id');
+            $tlcDate = $request->input('tlc_date');
+            $phrDate = $request->input('phr_date');
+            $yahDate = $request->input('yah_date');
 
 
             // Get the registration and customer associated with the PSR ID
             $registration = Registration::findorfail($psr_id);
             $customer = Customer::findorfail($customer_ref);
 
+            //dd($registration, $customer);
 
             /*
              * Check if we need to update any of the fields and apply the
@@ -139,13 +175,11 @@ class CustomerController extends Controller
 
             }
 
-            $updateType = User::class;
 
             /*
              * Save the Needs and Services to the database against the PSR ID
              * Check for updating user so we can assign the right class to it
              */
-
             // Current Need and Service Data
             $currentNeeds = $registration->needs->where('active', 1);
             $currentServices = $registration->services->where('active', 1);
@@ -170,7 +204,7 @@ class CustomerController extends Controller
             if(!is_null($removed_date)) {
 
                 foreach ($currentAttributes as $currentAttribute) {
-                    $this->removeAttribute($currentAttribute);
+                    removeAttribute($currentAttribute);
                 }
 
             } else {
@@ -187,21 +221,67 @@ class CustomerController extends Controller
 
                 if ( !blank($removeAttributes) ) {
                     foreach ($removeAttributes as $removeAttribute) {
-                        $this->removeAttribute($removeAttribute);
+                        removeAttribute($removeAttribute);
                     }
                 }
 
                 if ( !blank($addAttributes) ) {
                     foreach ($addAttributes as $addAttribute) {
 
+                        // Set the tempNeedDate
+                        if($addAttribute['code'] == '32') {
+                            $tempEndDate = $tlcDate;
+                        } else if ($addAttribute['code'] == '33') {
+                            $tempEndDate = $phrDate;
+                        } else if ($addAttribute['code'] == '34') {
+                            $tempEndDate = $yahDate;
+                        } else {
+                            $tempEndDate = null;
+                        }
+
                         // Add ID and Update Type to array
                         $addAttribute['psr_id'] = $psr_id;
-                        $addAttribute['updateType'] = $updateType;
+                        //$addAttribute['updateType'] = $updateType;
+                        $addAttribute['temp_end_date'] = $tempEndDate;
 
-                        $this->addAttribute($addAttribute);
+                        addAttribute($addAttribute);
                     }
                 }
             }
+
+            // Identify the temp Needs with dates to update
+            // Get all the customer temp needs in a table
+            $tempNeeds = [
+                'tlc' => $customer->needs->where('active', 1)
+                    ->where('code','32')
+                    ->first(),
+                'phr' => $customer->needs->where('active', 1)
+                    ->where('code','33')
+                    ->first(),
+                'yah' => $customer->needs->where('active', 1)
+                    ->where('code','34')
+                    ->first(),
+            ];
+
+            // Iterate through the list and update the temp end dates
+            foreach ($tempNeeds as $key => $need) {
+                // Check if the need exists before updating
+                if ($need) {
+                    if ($need['code'] == '32') {
+                        $tempNeeds[$key]->temp_end_date = $tlcDate;
+                    } else if ($need['code'] == '33') {
+                        $tempNeeds[$key]->temp_end_date = $phrDate;
+                    } else if ($need['code'] == '34') {
+                        $tempNeeds[$key]->temp_end_date = $yahDate;
+                    }
+
+                    $update = Need::find($need['id']);
+                    $update->temp_end_date = $need['temp_end_date'];
+                    $update->save();
+                }
+            }
+
+
 
             // Set the redirect based on whether the registration has been removed or not
             if ( !is_null($removed_date) ) {
@@ -217,8 +297,8 @@ class CustomerController extends Controller
                 'redirect_url' => $redirect,
             ]);
 
-/*
-                        return response()->json([
+
+/*                        return response()->json([
                             'success' => true,
                             'message' => 'successfully retrieved data',
                             'data' => [
@@ -229,10 +309,10 @@ class CustomerController extends Controller
                                 //'removed_date' => $removed_date,
                                 //'recipient_name' => $recipient_name,
                                 'arrayData' => $arrayData,
-                                'needs' => $needs,
+                                //'needs' => $needs,
                                 //'needCodes' => $needCodes,
                                 //'currentNeeds' => $currentNeeds,
-                                'currentNeedCodes' => $currentNeedCodes,
+                                //'currentNeedCodes' => $currentNeedCodes,
                                 //'addNeeds' => $addNeeds,
                                 //'removeNeeds' => $removeNeeds,
                                 //'services' => $services,
@@ -276,7 +356,7 @@ class CustomerController extends Controller
 
         try {
 
-
+            // Store the search term in a variable and validate the entry
             $data = [ 'search' => $request['search']];
 
             $rules = [
@@ -308,6 +388,10 @@ class CustomerController extends Controller
                 $results = [];
             }
 
+            // Store the request in the session and then clear it to reset the search box
+            $request->session()->flash('searchQuery', $query);
+            $request->session()->forget('searchQuery');
+
             //dd($results);
 
             // Return the view
@@ -322,69 +406,5 @@ class CustomerController extends Controller
         }
     }
 
-    protected function addAttribute(Array $data) {
-
-        if ( $data['type'] == 'need' ) {
-/*
-            // Check to see if we have a historic code for this and if not create a new one
-            try {
-                $id = Need::where('registration_id', $data['psr_id'])
-                    ->where('code', $data['code'])
-                    ->where('active', 0)
-                    ->firstOrFail();
-
-                $need = Need::find($id);
-                    $need->update(['active' => 1]);
-            }
-            catch(ModelNotFoundException $e) {
-*/
-                Need::create([
-                    'registration_id' => $data['psr_id'],
-                    'code' => $data['code'],
-                    'lastupdate_id' => 1,
-                    'lastupdate_type' => $data['updateType'],
-                ]);
-
-//            }
-
-        } else if ( $data['type'] == 'service' ) {
-
-            // Check to see if we have a historic code for this and if not create a new one
-/*            try {
-                $id = Service::where('registration_id', $data['psr_id'])
-                    ->where('code', $data['code'])
-                    ->where('active', 0)
-                    ->firstOrFail();
-
-                Service::find($id)->update(['active' => 1]);
-            }
-            catch(ModelNotFoundException $e) {
-*/
-                Service::create([
-                    'registration_id' => $data['psr_id'],
-                    'code' => $data['code'],
-                    'lastupdate_id' => 1,
-                    'lastupdate_type' => $data['updateType'],
-                ]);
-
-//            }
-        }
-    }
-
-    protected function removeAttribute(Array $data) {
-
-        if ( $data['type'] == 'need' ) {
-
-            Need::findorfail($data['id'])
-                ->update(['active' => 0]);
-
-        } else if ( $data['type'] == 'service' ) {
-
-            Service::findorfail($data['id'])
-                ->update(['active' => 0]);
-
-        }
-
-    }
 
 }

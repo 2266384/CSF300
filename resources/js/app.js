@@ -18,5 +18,5 @@ import { updateAttribute } from "./axios/attributesJS.js";
 
 window.submitData = submitData;
 window.submitNewData = submitNewData;
-window.updateAttibute = updateAttribute;
+window.updateAttribute = updateAttribute;
 

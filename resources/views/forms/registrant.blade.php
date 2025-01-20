@@ -83,10 +83,6 @@
 @endphp
 
 
-    <!-- Inject services -->
-@inject('customerservice', 'App\Services\CustomerService')
-@inject('attributesservice', 'App\Services\AttributeService')
-
 <form id="registrant-data">
 
     <div class="row">
@@ -113,11 +109,11 @@
         <div class="form-group col-md-3">
             <label for="status">Status:</label>
             <input type="text" {{ $status }} id="status" name="status"
-                   value="{{ $customerservice->customerStatus($customer) }}">
+                   value="{{ $customerService->customerStatus($customer) }}">
         </div>
         <div class="form-group col-md-4">
             <label for="source">Registration Source:</label>
-            <select id="source" name="source" class="form-control" {{ $source }} required>
+            <select id="source" name="source" class="form-control" {{ $source }} required class="form-control {{ $errors->has('source_name') ? 'is-invalid' : '' }}">>
                 @foreach(App\Models\Source::all()->where('active',1) as $source)
                     <option value="{{ $source->id }}"
                             @if($source->id == ((isset($registration->source) ? old('source', $registration->source) : '' )))
@@ -142,25 +138,18 @@
     <div class="row">
         <div class="form-group col-md-4">
             <label for="accountname">Account Name:</label>
-            <input type="text" {{ $acctname }} id="accountname" name="account_name" value="{{ (isset($customer->primary_title) ? $customer->primary_title : '') .
-                                                                            (isset($customer->primary_forename) ? ' ' . $customer->primary_forename : '') .
-                                                                            (isset($customer->primary_surname) ? ' ' . $customer->primary_surname : '') .
-                                                                            ($customer->secondary_title . $customer->secondary_forename . $customer->secondary_forename !== null ? ' & ' : '') .
-                                                                            (isset($customer->secondary_title) ? $customer->secondary_title : '') .
-                                                                            (isset($customer->secondary_forename) ? ' ' . $customer->secondary_forename : '') .
-                                                                            (isset($customer->secondary_surname) ? ' ' . $customer->secondary_surname : '') }}">
+            <input type="text" {{ $acctname }} id="accountname" name="account_name" value="{{ $customer->customer_names }}">
         </div>
         <div class="form-group col-md-4">
             <label for="recipientname">Recipient Name:</label>
             <input type="text" {{ $recipient }} id="recipientname" name="recipient_name"
                    value="{{ isset($registration->recipient_name) ? old('recipient_name', $registration->recipient_name) : '' }}"
-                   required>
+                   required class="form-control {{ $errors->has('recipient_name') ? 'is-invalid' : '' }}">
         </div>
     </div>
 
 </form>
 
 @if(in_array($route, ['registrations.create', 'customers.edit']))
-    @include('forms.attributes')
+    <livewire:attribute-list :customer="$customer"/>
 @endif
-
