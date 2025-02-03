@@ -31,7 +31,8 @@
                         <td>{{ $customer->secondary_forename }}</td>
                         <td>{{ $customer->secondary_surname }}</td>
                         <td>{{ $customer->secondary_dob ? $customer->secondary_dob->format('d-m-Y') : "" }}</td>
-                        <td><div class="buttoncontainer">
+                        <td>
+                            <div class="buttoncontainer">
                                 @if( $customer->registrations->where('active', '=', 1)->first() === null)
                                     <form action="{{route('registrations.create', $customer)}}" method="GET" >
                                         <button class="btn p-0 border-0 bg-transparent" title="Create Registrant"><i class="bi bi-file-plus fs-4"></i></button>
@@ -41,7 +42,8 @@
                                         <button type="submit" class="btn p-0 border-0 bg-transparent" title="Show Registrant"><i class="bi bi-eye fs-4"></i></button>
                                     </form>
                                 @endif
-                            </div></td>
+                            </div>
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>

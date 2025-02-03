@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use App\Services\CustomerService;
+use App\Services\TokenService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Services\AttributeService;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,7 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(TokenService::class, function ($app) {
+            return new TokenService();
+        });
     }
 
     /**
@@ -28,6 +32,16 @@ class AppServiceProvider extends ServiceProvider
         // Force use of https
         URL::forceScheme('https');
         //Paginator::useBootstrapFive();
+
+        // Set the defaults for password validation
+        // Minimum 8 characters, mixed case at least one letter, number, and symbol
+        Password::defaults(function () {
+            return Password::min(8)
+                ->mixedCase()
+                ->numbers()
+                ->letters()
+                ->symbols();
+        });
 
         View::composer('customers.show', function ($view) {
             $view->with(['attributeService' => new AttributeService()]);

@@ -17,8 +17,19 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     @livewireStyles
+    @livewireChartsScripts
 
     <title>{{ config('app.name') }}{{ isset($title) ? ' - ' . $title : '' }}</title>
+
+    <script>
+        // Get today's date in the format YYYY-MM-DD
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(today.getDate()).padStart(2, '0');
+
+        const minDate = `${year}-${month}-${day}`;
+    </script>
 
 </head>
 
@@ -26,7 +37,7 @@
 <body>
 
 <!-- Placeholder for Response Message -->
-<div id="responseMessage" class="mt-3 text-success"></div>
+<!-- <div id="responseMessage" class="mt-3 text-success"></div> -->
 
     <!-- Page Header -->
     <header>
@@ -73,94 +84,133 @@
                 Only visible if the user is logged in
              -->
             @auth
-            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white">
+                <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar">
+                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white">
                         <span class="fs-5 d-none d-sm-inline">Menu</span>
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                        <li class="nav-item">
-                            <a href="/" class="nav-link align-middle px-0">
-                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
-                            </a>
-                        </li>
-                        <li>
+                        <div class="accordion" id="menuAccordion">
+                            <!-- Home -->
+                            <div class="accordion-item">
+                                <p class="accordion-header" id="headingHome">
+                                    <a href="/" class="nav-link align-middle px-0">
+                                        <i class="fs-4 bi-house"></i>
+                                        <span class="ms-1 d-none d-sm-inline">Home</span>
+                                    </a>
+                                </p>
+                            </div>
 
-                            <ul class="nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
-                                <li class="w-100">
-                                    <nav class="navbar navbar-light bg-light navsearch">
-                                        <form class="form-inline" method="GET" action="{{ route('search') }}">
-                                            <div class="input-group">
-                                                <input class="form-control border-end-0 border" type="search" name="search" placeholder="Search" value="{{ session('searchQuery', '') }}" aria-label="Search">
-                                                <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border ms-n5" type="submit">
-                                                    <i class="bi bi-search"></i>
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </nav>
-                                </li>
+                            <!-- Search -->
+                            <div class="accordion-item">
+                                        <nav class="navbar navbar-light bg-light navsearch">
+                                            <form class="form-inline" method="GET" action="{{ route('search') }}">
+                                                <div class="input-group">
+                                                    <input class="form-control border-end-0 border" type="search" name="search" placeholder="Search"
+                                                           value="{{ session('searchQuery', '') }}" aria-label="Search">
+                                                    <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border ms-n5" type="submit">
+                                                        <i class="bi bi-search"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </nav>
+                            </div>
 
+                            <!-- Bulk Update -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingBulkUpdate">
+                                    <a href="#" class="nav-link px-0 align-middle">
+                                        <i class="fs-4 bi-upload"></i>
+                                        <span class="ms-1 d-none d-sm-inline">Bulk Update</span>
+                                    </a>
+                                </h2>
+                            </div>
 
-                                <!--
-                                <li class="w-100">
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Create new record</span></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Update record</span></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Actively remove</span></a>
-                                </li>
-                                -->
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-upload"></i> <span class="ms-1 d-none d-sm-inline">Bulk Update</span></a>
-                        </li>
-                        @if(Auth::User()->is_admin)
-                        <li>
-                            <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
-                                <i class="fs-4 bi-tools"></i> <span class="ms-1 d-none d-sm-inline">Admin</span></a>
-                            <ul class="collapse nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
-                                <li class="w-100">
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Item</span> 1</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Item</span> 2</a>
-                                </li>
-                            </ul>
-                        </li>
-                        @endif
-                        <li>
-                            <a href="#submenu3" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-envelope-at"></i> <span class="ms-1 d-none d-sm-inline">Report an Issue</span> </a>
-                            <ul class="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">
-                                <li class="w-100">
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 1</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 2</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 3</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 4</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">Customers</span> </a>
-                        </li>
-                    </ul>
-                    <hr>
+                            <!-- Admin -->
+                            @if(Auth::User()->is_admin)
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingAdmin">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseAdmin">
+                                            <i class="fs-4 bi-tools"></i>
+                                            <span class="ms-1 d-none d-sm-inline">Admin</span>
+                                        </button>
+                                    </h2>
+                                    <div id="collapseAdmin" class="accordion-collapse open" aria-labelledby="headingAdmin">
+                                        <div class="accordion-body">
+                                            <ul class="nav flex-column">
+                                                <li><a href="{{ route('users.index') }}" class="nav-link px-0 {{ isActiveRoute('users*') }}">Users <i class="bi bi-chevron-right"></i></a></li>
+                                                <hr class="solid">
+                                                <li><a href="{{ route('needcodes.index') }}" class="nav-link px-0 {{ isActiveRoute('needcodes*') }}">Needs <i class="bi bi-chevron-right"></i></a></li>
+                                                <li><a href="{{ route('servicecodes.index') }}" class="nav-link px-0 {{ isActiveRoute('servicecodes*') }}">Services <i class="bi bi-chevron-right"></i></a></li>
+                                                <hr class="solid">
+                                                <li><a href="{{ route('organisations.index') }}" class="nav-link px-0 {{ isActiveRoute('organisations*') }}">Organisations <i class="bi bi-chevron-right"></i></a></li>
+                                                <li><a href="{{ route('representatives.index') }}" class="nav-link px-0 {{ isActiveRoute('representatives*') }}">Representatives <i class="bi bi-chevron-right"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- RMetrics -->
+                                <div class="accordion-item">
+                                    <p class="accordion-header" id="viewMetrics">
+                                        <a href="{{ route('metrics.index') }}" class="nav-link align-middle px-0">
+                                            <i class="fs-4 bi-bar-chart"></i>
+                                            <span class="ms-1 d-none d-sm-inline">Metrics</span>
+                                        </a>
+                                    </p>
+                                </div>
+                            @endif
+
+                            <!-- Report an issue -->
+                            <div class="accordion-item">
+                                <p class="accordion-header" id="headingReportIssue">
+                                    <a href="{{ route('report') }}" class="nav-link align-middle px-0">
+                                        <i class="fs-4 bi-envelope-at"></i>
+                                        <span class="ms-1 d-none d-sm-inline">Report an Issue</span>
+                                    </a>
+                                </p>
+                            </div>
+
+                            <!-- Report an Issue -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="sampleHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseReportIssue" aria-expanded="false" aria-controls="collapseReportIssue">
+                                        <i class="fs-4 bi-envelope-at"></i>
+                                        <span class="ms-1 d-none d-sm-inline">Sample Heading</span>
+                                    </button>
+                                </h2>
+                                <div id="collapseReportIssue" class="accordion-collapse collapse" aria-labelledby="headingReportIssue">
+                                    <div class="accordion-body">
+                                        <ul class="nav flex-column">
+                                            <li><a href="#" class="nav-link px-0"><span class="d-none d-sm-inline">Product</span> 1</a></li>
+                                            <li><a href="#" class="nav-link px-0"><span class="d-none d-sm-inline">Product</span> 2</a></li>
+                                            <li><a href="#" class="nav-link px-0"><span class="d-none d-sm-inline">Product</span> 3</a></li>
+                                            <li><a href="#" class="nav-link px-0"><span class="d-none d-sm-inline">Product</span> 4</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Customers -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingCustomers">
+                                    <a href="#" class="nav-link px-0 align-middle">
+                                        <i class="fs-4 bi-people"></i>
+                                        <span class="ms-1 d-none d-sm-inline">Customers</span>
+                                    </a>
+                                </h2>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
                 </div>
-                    @endauth
+
+            @endauth
             </div>
 
             <div class="col-content
                 @auth with-sidebar @endauth
                 @guest no-sidebar @endguest">
+
                 <div id="flash-container">
                     @include('flashmessage')
                     @yield('content')

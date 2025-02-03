@@ -4,17 +4,30 @@ import axios from 'axios';
  * Constants for use in multiple functions
  * @type {HTMLElement}
  */
-const addButton = document.getElementById('add-attribute');
-const addForm = document.getElementById('available-attributes');
-const availableList = document.getElementById('available-attribute-list');
 
-const removeButton = document.getElementById('remove-attribute');
-const removeForm = document.getElementById('current-attributes');
+// Lists for needs and services
+const availableList = document.getElementById('available-attribute-list');
 const currentList = document.getElementById('current-attributes-list');
 
+
+const addButton = document.getElementById('add-attribute');
+const addForm = document.getElementById('available-attributes');
+const removeButton = document.getElementById('remove-attribute');
+const removeForm = document.getElementById('current-attributes');
+
+// These should be able to be added into an array or their individual functions
 const saveRegistrantButton = document.getElementById('save-registrant');
 const saveCustomerButton = document.getElementById('save-customer');
-
+const updateUserButton = document.getElementById('update-user');
+const saveNeedButton = document.getElementById('save-need');
+const createNeedButton = document.getElementById('create-need');
+const saveServiceButton = document.getElementById('save-service');
+const createServiceButton = document.getElementById('create-service');
+const saveUserButton = document.getElementById('save-user');
+const createOrganisationButton = document.getElementById('create-organisation');
+const updateOrganisationButton = document.getElementById('update-organisation');
+const createRepresentativeButton = document.getElementById('create-representative');
+const updateRepresentativeButton = document.getElementById('update-representative');
 
 
 
@@ -78,11 +91,28 @@ function axiosPost(url, payload) {
         })
         .catch(error => {
 
+/*
+            // Catches the error message and displays it to the screen
+            // The message resets the error field highlights at the moment so needs to be reviewed
+
+            // Save the flash message
+            saveFlashMessage(error.response.data.message, 'error');
+
+            // Redirect to the URL provided by Laravel
+            window.location.href = window.location;
+
+
+ */
+/*
             console.log(error.response.data.errors);
+            console.log(error.response.data.message);
+            debugger;
+*/
 
             if (error.response && error.response.status === 422) {
                 // Get the validation errors
                 const errors = error.response.data.errors;
+
 
                 // Update the error fields
                 Object.keys(errors).forEach(function (key) {
@@ -93,6 +123,7 @@ function axiosPost(url, payload) {
 
                     const inputField = document.querySelector(`[name="${key}"]`);
                     //console.log(inputField);
+                    //debugger;
                     if (inputField) {
                         inputField.classList.add('is-invalid');
                     }
@@ -130,7 +161,8 @@ function displayValidationErrors(errors) {
         }
     }
 }
-*/
+ */
+
 
 
 
@@ -197,9 +229,9 @@ function registrantDetails() {
     // Get the Registrant Form Data and the list of selected attributes
     const registrantData = new FormData(registrantForm);
     const attributeData = currentList.options;
-    let tlcDate = document.getElementById('tlc').value;
-    let phrDate = document.getElementById('phr').value;
-    let yahDate = document.getElementById('yah').value;
+    let tlcDate = document.getElementById('tlc-picker').value;
+    let phrDate = document.getElementById('phr-picker').value;
+    let yahDate = document.getElementById('yah-picker').value;
 
     // Create an empty array of the attributes
     let parsedAttributes = [];
@@ -243,7 +275,7 @@ function registrantDetails() {
  * Function to compile the registrant data and submit it to be saved
  */
 
-export function saveRegistrant() {
+export function saveRegistrant(url) {
 
     // Call the function to get the details
     const registrantData = registrantDetails();
@@ -252,22 +284,89 @@ export function saveRegistrant() {
 //    debugger;
 
     // Send the data to the Registration Controller with the form data and attributes
-    axiosPost('/registrations-store', registrantData);
+    axiosPost(url, registrantData);
 
 }
 
 
 /**
- * Function to save the customer record after editing
+ * Function to save the Organisation record after editing
  *
  */
-export function saveCustomer() {
+export function saveOrganisation(url) {
 
-    // Call the function to get the details
-    const registrantData = registrantDetails()
+    // The list of currently selected properties
+    const currentPropertiesList = document.getElementById('current-properties');
+    const organisationForm = document.getElementById('organisation-data');
 
-    axiosPost('/customer-update', registrantData);
+    // Get the Registrant Form Data and the list of selected attributes
+    const organisationData = new FormData(organisationForm);
+    const propertiesData = currentPropertiesList.options;
 
+    // Create an empty array of the properties
+    let parsedProperties = [];
+
+    // Add the JSON data to the parsedProperties array with the text value inserted
+    Array.from(propertiesData).forEach((property, index) => {
+        let propertyData = property.value;
+
+        parsedProperties.push(propertyData);
+    });
+
+    // Append the attribute data array to the form data
+    organisationData.append('propertyData', JSON.stringify(parsedProperties));
+
+    axiosPost(url, organisationData);
+
+}
+
+
+export function createWithBoolean(url, type) {
+
+    let form;
+
+    switch (type) {
+        case 'need':
+            form = document.getElementById('create-need-code-data');
+        break;
+        case 'service':
+            form = document.getElementById('create-service-code-data');
+        break;
+        case 'organisation':
+            form = document.getElementById('create-organisation-data');
+        break;
+        case 'representative':
+            form = document.getElementById('create-representative-data');
+            break;
+    }
+
+    // Get the Registrant Form Data and the list of selected attributes
+    const data = new FormData(form);
+
+    // Ensure `active` is always added, even if unchecked
+    const activeCheckbox = form.querySelector('input[type="checkbox"][name="active"]');
+    data.set('active', activeCheckbox && activeCheckbox.checked ? '1' : '0');
+
+    // If we have a checkbox called Token then ensure it is always added
+    const tokenCheckbox = form.querySelector('input[type="checkbox"][name="token"]');
+    if( tokenCheckbox ) {
+        data.set('token', tokenCheckbox && tokenCheckbox.checked ? '1' : '0');
+    }
+
+
+
+/*
+    console.log(data.entries);
+
+    // Output the form data to the console
+    for (const pair of data.entries()) {
+        console.log(pair[0], pair[1]);
+    }
+
+    debugger;
+*/
+
+    axiosPost(url, data);
 }
 
 
@@ -280,7 +379,7 @@ export function saveCustomer() {
 
 export async function updateAttribute(list) {
 
-debugger;
+//debugger;
 
     let fromList;
     let toList;
@@ -324,6 +423,7 @@ debugger;
         newOption.text = selectedText;
         toList.appendChild(newOption);
 
+
         // Remove the code
         const optionToRemove = fromList.options[selectedIndex]
         fromList.removeChild(optionToRemove)
@@ -354,6 +454,57 @@ debugger;
 
 
 
+function refreshAPIToken() {
+
+    const element = document.getElementById('representativeapitoken');
+
+    fetch('/refresh-token', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            element.value = data.token;
+            copyToClipboard(element);
+
+        })
+        .catch(error => console.error('Error generating token: ', error));
+}
+
+function copyToClipboard(element) {
+    const text = element.value;
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            // Show a copied message
+            const message = document.createElement("div");
+            message.textContent = "Copied to clipboard!";
+            message.style.position = "fixed";
+            message.style.bottom = "20px";
+            message.style.right = "20px";
+            message.style.padding = "10px 15px";
+            message.style.backgroundColor = "#4caf50";
+            message.style.color = "white";
+            message.style.borderRadius = "5px";
+            message.style.boxShadow = "0px 4px 6px rgba(0, 0, 0, 0.1)";
+            message.style.zIndex = "1000";
+            message.style.fontSize = "14px";
+
+            document.body.appendChild(message);
+
+            // Remove the message after 2 seconds
+            setTimeout(() => {
+                message.remove();
+            }, 2000);
+        })
+        .catch(err => {
+            console.error("Failed to copy text: ", err);
+        });
+}
+
+
 
 
 
@@ -362,9 +513,6 @@ debugger;
  * based on the provided elements
  */
 function initializeFormHandlers() {
-    const submitButton = document.getElementById('externalSubmitBtn');
-    const responseMessage = document.getElementById('responseMessage');
-    const form = document.getElementById('userForm');
 
     // Attach submit button handler
 /*    if (submitButton && form && responseMessage) {
@@ -395,9 +543,79 @@ function initializeFormHandlers() {
 
     if(saveCustomerButton) {
         saveCustomerButton.addEventListener('click', ()=>{
-            saveCustomer('/customer-update');
+            saveRegistrant('/customer-update');
         })
     }
+
+    if (updateUserButton) {
+        updateUserButton.addEventListener('click', function () {
+            document.getElementById('user-data').submit();
+        })
+    }
+
+    if (saveNeedButton) {
+        saveNeedButton.addEventListener('click', function() {
+            document.getElementById('need-code-data').submit();
+        })
+    }
+
+    if (createNeedButton) {
+        createNeedButton.addEventListener('click', function () {
+            createWithBoolean('/create-new-need', 'need');
+        })
+    }
+
+    if (saveServiceButton) {
+        saveServiceButton.addEventListener('click', function() {
+            document.getElementById('service-code-data').submit();
+        })
+    }
+
+    if (createServiceButton) {
+        createServiceButton.addEventListener('click', function () {
+            createWithBoolean('/create-new-service', 'service');
+        })
+    }
+
+    if (saveUserButton) {
+        saveUserButton.addEventListener('click', function() {
+            document.getElementById('create-user-data').submit();
+        })
+    }
+
+    if (createOrganisationButton) {
+        createOrganisationButton.addEventListener('click', function () {
+            createWithBoolean('/create-new-organisation', 'organisation');
+        })
+    }
+
+    if (updateOrganisationButton) {
+        updateOrganisationButton.addEventListener('click', function () {
+            //document.getElementById('organisation-data').submit();
+            saveOrganisation('/organisation-update');
+        })
+    }
+
+    if (createRepresentativeButton) {
+        createRepresentativeButton.addEventListener('click', function () {
+            createWithBoolean('/create-new-representative', 'representative');
+        })
+    }
+
+    if (updateRepresentativeButton) {
+        updateRepresentativeButton.addEventListener('click', function () {
+            document.getElementById('representative-data').submit();
+        })
+    }
+
+    if(document.getElementById('create-api-token')) {
+        document.getElementById('create-api-token').addEventListener('click', function () {
+            refreshAPIToken();
+        })
+    }
+
+
+
 
 }
 

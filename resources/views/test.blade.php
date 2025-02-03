@@ -1,12 +1,11 @@
-@php
-    $customer = App\Models\Customer::findorfail(735);
 
 
-    @endphp
-<x-layout Title="Test">
-    {{ $customer->customer_names }}
+<x-layout Title="Need Codes">
+    <div class="col content">
 
 
-    <livewire:attribute-list :parameter="$customer->id"/>
+        @livewire('sales-chart')
 
+
+    </div>
 </x-layout>

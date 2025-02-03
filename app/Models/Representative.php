@@ -2,11 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Representative extends Authenticatable
 {
+
+    // Allows for creation of API Keys
+    use HasApiTokens, HasFactory, Notifiable;
 
 
     /**
@@ -16,8 +23,7 @@ class Representative extends Authenticatable
         'name',
         'email',
         'password',
-        'organisation',
-        'APIKey',
+        'organisation_id',
         'active'
     ];
 
@@ -36,7 +42,6 @@ class Representative extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'APIKey'
     ];
 
     /**
@@ -53,14 +58,14 @@ class Representative extends Authenticatable
      */
     // Return customers organisation of representative
     public function represents() {
-        return $this->belongsTo(Organisation::class, 'organisation');
+        return $this->belongsTo(Organisation::class, 'organisation_id', 'id');
     }
 
 
     /**
      * Polymorphic Relation for Representative to be recorded in both Need and Service Class
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
     public function updatedneeds() {
         return $this->morphMany(Need::class, 'lastupdate', 'lastupdate_type', 'lastupdate_id', 'id');

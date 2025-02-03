@@ -40,9 +40,9 @@ class Organisation extends Model
             Property::class,
             Responsibility::class,
             'organisation',
-            'occupier',
+            'postcode',
             'id',
-            'id'
+            'postcode'
         );
     }
 
