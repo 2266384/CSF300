@@ -41,6 +41,16 @@ return new class extends Migration
 
         if ($db_type === 'sqlsrv') {
             DB::statement("ALTER TABLE properties ADD CHECK(house_number IS NOT NULL OR house_name IS NOT NULL)");
+
+            /**
+             * Add some calculated columns to capture different elements of the Postcode field
+             */
+            DB::statement( "ALTER TABLE properties
+                ADD PostcodeArea AS LEFT(Postcode,PATINDEX('%[^A-Za-z]%',Postcode+'0')-1),
+                    Outcode AS LEFT(Postcode, CHARINDEX(' ', Postcode + ' ') - 1),
+                    Incode AS RIGHT(Postcode, LEN(Postcode) - CHARINDEX(' ', Postcode + ' ') + 1)
+            ");
+
         } else if ($db_type === 'mysql') {
             // Create INSERT trigger
             DB::statement("
@@ -54,7 +64,7 @@ return new class extends Migration
                     END IF;
                 END"
             );
-            
+
             // Create UPDATE trigger
             DB::statement("
                 CREATE TRIGGER check_house_number_or_name_update
@@ -67,7 +77,21 @@ return new class extends Migration
                     END IF;
                 END"
             );
+
+            /**
+             * Add some calculated columns to capture different elements of the Postcode field
+             */
+            DB::statement("
+                ALTER TABLE properties
+                ADD COLUMN PostcodeArea VARCHAR(10) GENERATED ALWAYS AS (LEFT(Postcode, LOCATE('0', REGEXP_REPLACE(Postcode, '[A-Za-z]', '0') ) - 1)) STORED,
+                ADD COLUMN Outcode VARCHAR(10) GENERATED ALWAYS AS (LEFT(Postcode, LOCATE(' ', CONCAT(Postcode, ' ')) - 1)) STORED,
+                ADD COLUMN Incode VARCHAR(10) GENERATED ALWAYS AS (RIGHT(Postcode, CHAR_LENGTH(Postcode) - LOCATE(' ', CONCAT(Postcode, ' ')) + 1)) STORED
+            ");
+
         }
+
+
+
 
     }
 

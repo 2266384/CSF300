@@ -16,14 +16,16 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->unsignedBigInteger('organisation');
-            $table->string('APIKey')->unique();
+            $table->unsignedBigInteger('organisation_id');
             $table->boolean('active')->default(false);
             $table->timestamps();
 
-            $table->foreign('organisation')->references('id')->on('organisations')
+            $table->foreign('organisation_id')->references('id')->on('organisations')
                 ->onDelete('cascade');
         });
+
+
+
     }
 
     /**

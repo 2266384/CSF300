@@ -37,7 +37,7 @@
 
 @section('scripts')
     <!-- Include Vite -->
-    @vite('resources/js/axios/attributesJS.js')
+    @vite('resources/js/axios/custom.js')
 @endsection
 
 </body>

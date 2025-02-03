@@ -4,6 +4,7 @@
 
 return [
     'home' => '/home',
+    'report' => '/report',
     'customers' => '/customers',
     'customers-show' => '/customers/1',
     'customers-edit' => '/customers/1/edit',

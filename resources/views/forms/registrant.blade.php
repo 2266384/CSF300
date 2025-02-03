@@ -111,8 +111,10 @@
             <input type="text" {{ $status }} id="status" name="status"
                    value="{{ $customerService->customerStatus($customer) }}">
         </div>
+
         <div class="form-group col-md-4">
             <label for="source">Registration Source:</label>
+            <span id="source_name-error" class="error text-danger">@error('source_name') {{ $message }} @enderror</span>
             <select id="source" name="source" class="form-control" {{ $source }} required class="form-control {{ $errors->has('source_name') ? 'is-invalid' : '' }}">>
                 @foreach(App\Models\Source::all()->where('active',1) as $source)
                     <option value="{{ $source->id }}"
@@ -123,11 +125,13 @@
                 @endforeach
             </select>
         </div>
+
         <div class="form-group col-md-2">
             <label for="consent">Consent to Share:</label>
             <input type="date" {{ $consent }} class="form-control" id="consent" name="consent_date"
                    value="{{ isset($registration->consent_date) ? old('consent_date', $registration->consent_date) : null }}" {{$consentVisible}}>
         </div>
+
         <div class="form-group col-md-2">
             <label for="remove">Date Removed:</label>
             <input type="date" {{ $removed }} class="form-control" id="remove" name="removed_date"
@@ -142,6 +146,7 @@
         </div>
         <div class="form-group col-md-4">
             <label for="recipientname">Recipient Name:</label>
+            <span id="recipient_name-error" class="error text-danger">@error('recipient_name') {{ $message }} @enderror</span>
             <input type="text" {{ $recipient }} id="recipientname" name="recipient_name"
                    value="{{ isset($registration->recipient_name) ? old('recipient_name', $registration->recipient_name) : '' }}"
                    required class="form-control {{ $errors->has('recipient_name') ? 'is-invalid' : '' }}">

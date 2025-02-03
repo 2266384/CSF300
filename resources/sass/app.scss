@@ -22,29 +22,46 @@ body {
 }
 
 :root {
-    --header-height: 5em;
-    --navbar-width: 250px;
+    --header-height: 6vw;   //5em;
+    --navbar-width: 18vw; //250px;
 }
+
+/* Reset default browser margins and paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*
+#responseMessage.mt-3 {
+    //margin-top: 0 !important;
+    margin-top: calc(var(--header-height) + 10vw);
+}
+*/
 
 
 /* Page banner */
 .pageheader {
     position: fixed;
-    z-index: 1000 !important;
+    z-index: 800 !important;
     height: var(--header-height);
     width: 100vw !important;
     background-color: $primary-dwr-blue;
-    margin-top: -20px;
+    //margin-top: -2vw;//-20px;
+    padding: 10px 0;
+    //position: sticky;
+    top: 0;
 }
 
 .companylogo img {
-    width: 14em;
+    width: 11.5vw;
     position: relative;
     top: -1em;
 }
 
 .apptitle {
-    font-size: xxx-large;
+    font-size: 2.8vw;
     font-weight: bold;
     margin-left: auto;
     margin-right: auto;
@@ -52,7 +69,7 @@ body {
 }
 
 body > header > div > div > div.col-sm-2.login > div > a {
-    padding-top: 1.2em;
+    padding-top: 1vw; //1.2em;
 }
 
 .sidebar {
@@ -61,19 +78,221 @@ body > header > div > div > div.col-sm-2.login > div > a {
     height: calc(100vh - var(--header-height) + 25px);
     position: fixed;
     width: var(--navbar-width);
+    margin-top: calc(var(--header-height) - 0.5vw);
 }
-
 
 .no-sidebar .content {
     margin-left: 0;
     width: 100%;
 }
 
-.content {
-    padding: 1em;
-    margin-left: var(--navbar-width);
-    margin-top: calc(var(--header-height) - 15px);
+.form-group.checkbox {
+    padding-top: 1vw;
+    display: flex;
+    align-items: center;
 }
+
+.form-check-label {
+    padding-top: 0.3vw;
+    margin-left: 5px; /* Spacing between checkbox and label */
+}
+
+div.col-content.with-sidebar {
+    //margin-top: calc(var(--header-height) + 0.5vw);
+    margin-left: var(--navbar-width);
+    width: calc(97vw - var(--navbar-width));
+}
+
+div.col.content {
+    //padding-top: 150px;
+    margin-top: calc(var(--header-height) + 0.5vw);
+}
+/*
+
+.content {
+    margin-left: var(--navbar-width);
+}
+
+ */
+
+
+
+
+
+.accordion-button:not(.collapsed) {
+    background-color: $primary-dwr-blue; /* Highlight active */
+    color: white;
+}
+
+.accordion-button:hover {
+    background-color: $primary-dwr-blue; /* Hover state */
+    color: white;
+}
+
+/* Accordion Item Borders */
+.accordion-item {
+    background-color: $primary-dwr-blue;
+    color: white;
+    border: 0px solid $primary-dwr-blue; /* Border for accordion items */
+    //border-radius: 5px; /* Rounded corners */
+}
+
+/* Accordion Content Styling */
+.accordion-collapse {
+    background-color: $primary-dwr-blue; /* Slightly lighter gray */
+    color: #fff;
+    padding: 5px;
+}
+
+
+
+
+
+/* Icon Customization */
+.accordion-button::after {
+    display: none;  // Turn off normal down arrow
+    content: '\25BC'; /* Down arrow */
+    font-size: 0.8rem;
+    color: white;
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.accordion-button:not(.collapsed)::after {
+    transform: rotate(180deg); /* Rotate arrow */
+}
+
+
+
+
+/* General styles for both nav links and accordion items */
+.nav-link,
+.accordion-button {
+    //font-family: 'Arial', sans-serif; /* Use the same font-family */
+    font-size: 16px; /* Set a uniform font size */
+    font-weight: 400; /* Normal font weight */
+    //line-height: 1.5; /* Adjust for consistent spacing */
+    line-height: 2;
+    color: rgba(255, 255, 255, 0.8); /* Uniform text color */
+    text-align: left; /* Align text consistently */
+    //padding: 10px 15px; /* Ensure consistent padding */
+    padding: 0px;
+    border: none; /* Remove borders if present */
+    background: none; /* Ensure background is consistent */
+    display: block; /* Ensure they behave similarly in layout */
+}
+
+/* Add hover and focus styles for both */
+.nav-link:hover,
+.accordion-button:hover,
+.nav-link:focus,
+.accordion-button:focus {
+    color: white; /* Change color on hover/focus */
+    text-decoration: none; /* Remove underline or extra styles */
+    background-color: $primary-dwr-blue; /* Add a light background */
+    border-radius: 5px; /* Optional: rounded corners */
+}
+
+/* Specific adjustments for accordion buttons */
+.accordion-button {
+    text-transform: none; /* Ensure no uppercase if Bootstrap adds it */
+    width: 100%; /* Ensure it spans full width like nav links */
+}
+
+/* Specific adjustments for nav links */
+.nav-link {
+    //width: 100%; /* Same width as accordion buttons */
+    //text-transform: none; /* Ensure no uppercase unless desired */
+}
+
+/* Optional: Style the active state consistently */
+.nav-link.active,
+.accordion-button:not(.collapsed) {
+    font-weight: 500; /* Slightly bolder for active state */
+    background-color: $primary-dwr-blue; /* Light gray background */
+    //background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
+    color: white; /* Darker text for contrast */
+}
+
+/* Target the items inside #collapseAdmin */
+#collapseAdmin .accordion-body .nav-link {
+    font-size: 14px; /* Smaller font size */
+    //padding: 5px 10px; /* Smaller padding for compact spacing */
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 1; /* Adjust line-height for tighter spacing */
+}
+
+/* Add hover/focus effects for better UX */
+#collapseAdmin .accordion-body .nav-link:hover {
+    color: white; /* Highlight color on hover */
+    background-color: $primary-dwr-blue; /* Subtle background on hover */
+    border-radius: 3px; /* Rounded corners */
+}
+
+/* Optional: Adjust the accordion body itself for spacing */
+#collapseAdmin .accordion-body {
+    padding: 5px; /* Reduce padding inside the accordion body */
+}
+
+/* Optional: Adjust accordion header for smaller spacing */
+#collapseAdmin .accordion-header {
+    font-size: 15px; /* Slightly smaller header font size */
+    //padding-top: 3px;
+    //padding-bottom: 3px;
+    //padding: 5px 10px; /* Smaller header padding */
+}
+
+#collapseAdmin .solid {
+    //padding: 0px;
+    margin: 3px;
+}
+
+
+
+#nav-tab > button {
+    padding-left: 1vw;
+    padding-right: 1vw;
+    padding-top: 0.25vw;
+    padding-bottom: 0.25vw;
+    background-color: white;
+    color: black;
+    border-left: 1px solid lightgray;
+    border-right: 1px solid lightgrey;
+    border-top: 1px solid lightgrey;
+}
+
+
+#nav-tab > button.nav-link.active {
+    color: white;
+    background-color: $primary-dwr-blue;
+}
+
+#nav-tab > button.nav-link {
+    color: gray;
+    background-color: lightgray;
+}
+
+#nav-tab > button.nav-link:hover {
+    color: white;
+    background-color: $secondary-dwr-dark-green;
+}
+
+
+.responsibilities {
+    padding-top: 1vw;
+}
+
+.postcodes {
+    padding-top: 1vw;
+}
+
+
+
+
+
+
+
 
 ul.nav, li.nav, .nav-link {
     color: rgb(256,256,256,0.8);
@@ -105,10 +324,12 @@ ul.nav a:hover, ul.nav a:focus, ul.nav a:active, li.nav a:hover, li.nav a:focus,
     color: white;
 }
 
+/*
 .nav-tabs .nav-link {
     background-color: rgb(175, 175, 175, 1);
     color: #4a5568;
 }
+ */
 
 .btn-primary, .btn-primary.active {
     background-color: $primary-dwr-blue;
@@ -133,12 +354,17 @@ ul.nav a:hover, ul.nav a:focus, ul.nav a:active, li.nav a:hover, li.nav a:focus,
     align-items: center;
 }
 
+#user-activity {
+    padding-top: 2vw;
+}
+
 #flash-container, #flash-message {
     position: absolute;
     margin-top: 0.5em;
     padding: 0;
     height: 0.4em;
     line-height: 0.4em;
+    z-index: 1000;
 }
 
 #edit-registrant,  #cancel-save-customer, #cancel-save-registration {
@@ -149,17 +375,60 @@ ul.nav a:hover, ul.nav a:focus, ul.nav a:active, li.nav a:hover, li.nav a:focus,
     padding-top: 0.6em;
 }
 
+/********  Buttons *********/
 
-#save-customer, #save-registrant {
+div#need-create-buttoncontainer,
+div#user-create-buttoncontainer,
+div#organisation-create-buttoncontainer,
+div#representative-create-buttoncontainer {
+    //margin-top: -2vw;
+    padding-top: -1vw;
+    padding-bottom: 0.5vw;
+}
+
+
+
+#save-customer,
+#save-registrant,
+#update-user,
+#save-need,
+#create-need,
+#save-service,
+#create-service,
+#save-user,
+#update-organisation,
+#create-organisation,
+#update-representative,
+#create-representative
+{
    margin: 0.6em;
     color: $primary-dwr-blue;
 }
 
-#save-customer > i, #save-registrant > i {
-//    color: $primary-dwr-blue;
+#update-user,
+#save-need,
+#create-need,
+#save-service,
+#create-service,
+#save-user,
+#update-organisation,
+#create-organisation,
+#update-representative,
+#create-representative
+{
+    margin-top: 0;
 }
 
-#cancel-save-customer > i, #cancel-save-registration > i {
+#cancel-save-customer > i,
+#cancel-save-registration > i,
+#cancel-save > i,
+#cancel-save-need > i,
+#cancel-save-service > i,
+#cancel-save-user > i,
+#cancel-show-user > i,
+#cancel-save-organisation > i,
+#cancel-save-representative > i,
+{
     color: $secondary-dwr-soft-red;
     margin-left: 0.25em;
     margin-right: 0.25em;
@@ -174,7 +443,25 @@ form > button > i {
     color: $primary-dwr-blue;
 }
 
-table.dataTable tbody tr {
-    height: 15px;
+
+/********  Report Screen *********/
+#report-issue > div.row > div,
+#file_upload,
+#report-issue > button {
+    margin-top: 0.75vw;
+}
+
+
+/********  DataTables *********/
+
+/* Target DataTables rows only */
+.dataTable tbody tr {
+    height: 3vw;
+}
+
+.dataTable td, .dataTable th {
+    padding: 10px;
     vertical-align: middle;
 }
+
+

@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Need;
 use App\Models\Registration;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -213,6 +211,7 @@ class CustomerController extends Controller
                 $addAttributes = collect($arrayData)->filter(function ($item) use ($currentAttributeCodes) {
                     return !in_array($item['code'], $currentAttributeCodes);
                 })->values()->toArray();
+
 
                 $removeAttributes = collect($currentAttributes)->filter(function ($item) use ($attributeCodes) {
                     return !in_array($item['code'], $attributeCodes);

@@ -27,6 +27,7 @@
             <form id="current-attributes">
                 @csrf
                 <label for="current-attributes-list">Selected Needs and Services:</label>
+                <span id="arrayData-error" class="error text-danger">@error('arrayData') {{ $message }} @enderror</span>
                 <select id="current-attributes-list" size="20" name="arrayData" aria-label="Selected Attributes List" required class="form-select {{ $errors->has('arrayData_name') ? 'is-invalid' : '' }}">
                     @foreach($selectedItems as $selectedItemId)
                         @php
@@ -53,21 +54,23 @@
                 </div>
                 <div class="modal-body">
                     <label for="expire">Expiry Date:</label>
-                    <input type="date" id="expire" name="expire_date">
+                    <input type="date" id="expire" name="expire_date" min="2025-01-01">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="cancelDate" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" id="saveDate" data-bs-dismiss="modal" disabled>Save</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Temporary Need Dates - use wire:ignore to stop the readonly state from being reset when the livewire component re-renders-->
     <div class="container" id="tempdates">
         <div class="row">
             <div class="col-md-4">
                 <!-- Error message container -->
+                <label for="tlc-picker">Temporary - Life Changes:</label>
                 <span id="tlc_date-error" class="error text-danger">@error('tlc_date_name') {{ $message }} @enderror</span>
-                <label for="tlc">Temporary - Life Changes:</label>
                 @php
                         $attributes = array_filter($currentAttributes, function ($att) {
                         return $att['description'] === 'Temporary - Life changes';
@@ -77,18 +80,18 @@
                 @if($filtered)
                     <!-- Get the selected item from the model -->
                     @if( !is_null($filtered['temp_end_date']) )
-                        <input type="date" class="form-control-plaintext" id="tlc" name="tlc_date" value="{{ $filtered['temp_end_date'] }}">
+                        <input type="date" class="form-control-plaintext {{ $errors->has('tlc_date_name') ? 'is-invalid' : '' }}" id="tlc-picker" name="tlc_date" value="{{ $filtered['temp_end_date'] }}" wire:ignore>
                     @else
-                        <input type="date" readonly class="form-control-plaintext" id="tlc" name="tlc_date" value="">
+                        <input type="date" readonly class="form-control-plaintext {{ $errors->has('tlc_date_name') ? 'is-invalid' : '' }}" id="tlc-picker" name="tlc_date" value="" wire:ignore>
                     @endif
                 @else
-                    <input type="date" readonly class="form-control-plaintext" id="tlc" name="tlc_date" value="">
+                    <input type="date" readonly class="form-control-plaintext {{ $errors->has('tlc_date_name') ? 'is-invalid' : '' }}" id="tlc-picker" name="tlc_date" value="" wire:ignore>
                 @endif
             </div>
             <div class="col-md-4">
                 <!-- Error message container -->
+                <label for="phr-picker">Temporary - Post Hospital Recovery:</label>
                 <span id="phr_date-error" class="error text-danger">@error('phr_date_name') {{ $message }} @enderror</span>
-                <label for="phr">Temporary - Post Hospital Recovery:</label>
                 @php
                     $attributes = array_filter($currentAttributes, function ($att) {
                         return $att['description'] === 'Temporary - Post hospital recovery';
@@ -98,18 +101,18 @@
                 @if($filtered)
                     <!-- Get the selected item from the model -->
                     @if( !is_null($filtered['temp_end_date']) )
-                        <input type="date" class="form-control-plaintext" id="phr" name="phr_date" value="{{ $filtered['temp_end_date'] }}">
+                        <input type="date" class="form-control-plaintext {{ $errors->has('phr_date_name') ? 'is-invalid' : '' }}" id="phr-picker" name="phr_date" value="{{ $filtered['temp_end_date'] }}" wire:ignore>
                     @else
-                        <input type="date" readonly class="form-control-plaintext" id="phr" name="phr_date" value="">
+                        <input type="date" readonly class="form-control-plaintext {{ $errors->has('phr_date_name') ? 'is-invalid' : '' }}" id="phr-picker" name="phr_date" value="" wire:ignore>
                     @endif
                 @else
-                    <input type="date" readonly class="form-control-plaintext" id="phr" name="phr_date" value="">
+                    <input type="date" readonly class="form-control-plaintext {{ $errors->has('phr_date_name') ? 'is-invalid' : '' }}" id="phr-picker" name="phr_date" value="" wire:ignore>
                 @endif
             </div>
             <div class="col-md-4">
                 <!-- Error message container -->
+                <label for="yah-picker">Temporary - Young Adult Householder:</label>
                 <span id="yah_date-error" class="error text-danger">@error('yah_date_name') {{ $message }} @enderror</span>
-                <label for="yah">Temporary - Young Adult Householder:</label>
                 @php
                     $attributes = array_filter($currentAttributes, function ($att) {
                         return $att['description'] === "Temporary - Young adult householder(<18)";
@@ -119,12 +122,12 @@
                 @if($filtered)
                     <!-- Get the selected item from the model -->
                     @if( !is_null($filtered['temp_end_date']) )
-                        <input type="date" class="form-control-plaintext" id="yah" name="yah_date" value="{{ $filtered['temp_end_date'] }}">
+                        <input type="date" class="form-control-plaintext {{ $errors->has('yah_date_name') ? 'is-invalid' : '' }}" id="yah-picker" name="yah_date" value="{{ $filtered['temp_end_date'] }}" wire:ignore>
                     @else
-                        <input type="date" readonly class="form-control-plaintext" id="yah" name="yah_date" value="">
+                        <input type="date" readonly class="form-control-plaintext {{ $errors->has('yah_date_name') ? 'is-invalid' : '' }}" id="yah-picker" name="yah_date" value="" wire:ignore>
                     @endif
                 @else
-                    <input type="date" readonly class="form-control-plaintext" id="yah" name="yah_date" value="">
+                    <input type="date" readonly class="form-control-plaintext {{ $errors->has('yah_date_name') ? 'is-invalid' : '' }}" id="yah-picker" name="yah_date" value="" wire:ignore>
                 @endif
             </div>
         </div>
@@ -132,15 +135,22 @@
 
 </div>
 
-<!-- Dynamically add the script to the date picker modal -->
-<script>
 
+<script>
+    // Set the min attribute of the date pickers to today's date
+    document.getElementById('tlc-picker').setAttribute('min', minDate);
+    document.getElementById('phr-picker').setAttribute('min', minDate);
+    document.getElementById('yah-picker').setAttribute('min', minDate);
+
+
+<!-- Dynamically add the script to the date picker modal -->
     document.addEventListener('DOMContentLoaded', function() {
+        const cancelDateBtn = document.getElementById('cancelDate');
         const saveDateBtn = document.getElementById('saveDate');
         const expireInput = document.getElementById('expire');
-        const tlcPicker = document.getElementById('tlc');
-        const phrPicker = document.getElementById('phr');
-        const yahPicker = document.getElementById('yah');
+        const tlcPicker = document.getElementById('tlc-picker');
+        const phrPicker = document.getElementById('phr-picker');
+        const yahPicker = document.getElementById('yah-picker');
         const selectList = document.getElementById('available-attribute-list');
         const currentList = document.getElementById('current-attributes-list');
         const modal = document.getElementById('dateModal')
@@ -194,8 +204,15 @@
         // Event handler for select list to get the date picker for population
         selectList.addEventListener('click', function () {
 
+            // Set the minimum date on the date picker to today
+            expireInput.addEventListener('click', () => {
+                expireInput.setAttribute('min', minDate);
+            });
+
             // Check to see if the date field has a value and enable the save button
             expireInput.addEventListener('input', () => {
+
+
                 if (expireInput.value) {
                     saveDateBtn.disabled = false;
                 } else {
@@ -203,17 +220,60 @@
                 }
             });
 
+
+
+            // If we select the Cancel button trigger a select of the attribute on the currentlist so it returns
+            cancelDateBtn.addEventListener('click', () => {
+
+                currentOption = selectList.options[selectList.selectedIndex]
+                // console.log(currentOption);
+
+                let opt = currentOption.value;
+
+                // Loop through each option in the select list and find the one we've just selected
+                for (let i = 0; i < currentList.options.length; i++) {
+                    const option = currentList.options[i];
+
+                    // Match the code values
+                    if(JSON.parse(option.value).code === opt) {
+
+                        // Find the LiveWire click attribute
+                        const hasWireClick = option.hasAttribute('wire:click');
+
+                        // If the option has a LiveWire Click event then trigger the event
+                        if (hasWireClick) {
+                            //console.log(`wire:click value: ${option.getAttribute('wire:click')}`);
+                            action = 'cancel';
+                            option.click();
+                        }
+
+                    }
+                }
+
+            })
+
+
             currentOption = selectList.options[selectList.selectedIndex]; // Get the selected <option>
             dateField = getDateField(currentOption.text);
-            action = 'add';
+            //action = 'add';
         });
+
 
         // Event handler for current list to get the date picker to clear
         currentList.addEventListener('click', function() {
-            currentOption = currentList.options[currentList.selectedIndex]; // Get the selected <option>
-            dateField = getDateField(currentOption.text);
 
-            dateField.value = "";
+            // Only clear the dates if we haven't clicked cancel
+            if(action !== 'cancel') {
+
+                currentOption = currentList.options[currentList.selectedIndex]; // Get the selected <option>
+                dateField = getDateField(currentOption.text);
+
+                dateField.value = "";
+            }
+
+            // Clear the action variable again
+            action = null;
+
         })
 
 
@@ -227,6 +287,7 @@
             expireInput.value = "";
 
         });
+
     });
 
 </script>

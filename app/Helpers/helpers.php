@@ -2,9 +2,12 @@
 
 use App\Models\Customer;
 use App\Models\Need;
+use App\Models\Property;
 use App\Models\Service;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 /**
  * Concatenates Primary and Secondary names
@@ -37,7 +40,7 @@ if (! function_exists('customerNames')) {
 
 if (! function_exists('addAttribute')) {
 
-    function addAttribute(array $data)
+    function addAttribute(Array $data)
     {
 
         $userId = Auth::id();
@@ -112,6 +115,52 @@ if (! function_exists('removeAttribute')) {
                 ->update(['active' => 0]);
 
         }
+
+    }
+}
+
+if (! function_exists('latestActivity')) {
+    function latestActivity($user) {
+
+        //dd($user->updatedNeeds);
+
+        // Get the needs and services from the last 90 days
+        $needUpdates = $user->updatedNeeds()
+            ->where('valid_from', '>=', [Carbon::now()->subDays(90)->toDateString()])
+            ->get();
+
+        $serviceUpdates = $user->updatedservices()
+            ->where('valid_from', '>=', [Carbon::now()->subDays(90)->toDateString()])
+            ->get();
+
+        // Merge the collections together and sort them
+        $allUpdates = $needUpdates->merge($serviceUpdates)->sortByDesc('valid_from');
+
+        return $allUpdates;
+
+    }
+
+}
+
+if (! function_exists('isActiveRoute')) {
+    function isActiveRoute($pattern, $output = 'active') {
+        return request()->is($pattern) ? $output : '';
+    }
+}
+
+if (! function_exists('propertyAddress')) {
+    function propertyAddress(Property $property) {
+
+        $address = [
+            'House_Number' => $property->house_number,
+            'House_Name' => $property->house_name,
+            'Street' => $property->street,
+            'Town' => $property->town,
+            'Parish' => $property->parish,
+            'County' => $property->county,
+        ];
+
+        return implode(', ', $address);
 
     }
 }
