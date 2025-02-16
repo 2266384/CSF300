@@ -14,9 +14,9 @@ class SourcesTableSeeder extends Seeder
     public function run(): void
     {
         $defaultSources = [
-            ['id' => 1, 'source' => 'DCWW', 'active' => true],
-            ['id' => 2, 'source' => 'Source 2', 'active' => true],
-            ['id' => 3, 'source' => 'Source 3', 'active' => true],
+            ['source' => 'DCWW', 'active' => true],
+            ['source' => 'Source 2', 'active' => true],
+            ['source' => 'Source 3', 'active' => true],
         ];
 
         foreach ($defaultSources as $source) {

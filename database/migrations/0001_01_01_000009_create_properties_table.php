@@ -51,6 +51,26 @@ return new class extends Migration
                     Incode AS RIGHT(Postcode, LEN(Postcode) - CHARINDEX(' ', Postcode + ' ') + 1)
             ");
 
+
+            /**
+             * Function to remove non-alphanumeric characters - to be used during API Address Search
+             */
+            // Drop the function if it already exists
+            DB::statement("IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.RemoveNonAlphaNumeric') AND type = 'FN')
+                                    DROP FUNCTION dbo.RemoveNonAlphaNumeric;");
+
+            // Recreate the function
+            DB::statement("CREATE FUNCTION dbo.RemoveNonAlphaNumeric(@input NVARCHAR(MAX))
+                                    RETURNS NVARCHAR(MAX)
+                                    AS
+                                    BEGIN
+                                        WHILE PATINDEX('%[^a-zA-Z0-9]%', @input) > 0
+                                        SET @input = STUFF(@input, PATINDEX('%[^a-zA-Z0-9]%', @input), 1, '');
+
+                                        RETURN @input;
+                                    END");
+
+
         } else if ($db_type === 'mysql') {
             // Create INSERT trigger
             DB::statement("
@@ -88,10 +108,31 @@ return new class extends Migration
                 ADD COLUMN Incode VARCHAR(10) GENERATED ALWAYS AS (RIGHT(Postcode, CHAR_LENGTH(Postcode) - LOCATE(' ', CONCAT(Postcode, ' ')) + 1)) STORED
             ");
 
+
+
+            /**
+             * Function to remove non-alphanumeric characters - to be used during API Address Search
+             */
+            DB::statement("
+                DROP FUNCTION IF EXISTS RemoveNonAlphaNumeric;
+            ");
+
+            DB::statement("
+                CREATE FUNCTION RemoveNonAlphaNumeric(input_text TEXT)
+                RETURNS TEXT DETERMINISTIC
+                BEGIN
+                    DECLARE output_text TEXT;
+                    SET output_text = input_text;
+                    
+                    WHILE output_text REGEXP '[^a-zA-Z0-9]' DO
+                        SET output_text = REGEXP_REPLACE(output_text, '[^a-zA-Z0-9]', '');
+                    END WHILE;
+                    
+                    RETURN output_text;
+                END
+            ");
+
         }
-
-
-
 
     }
 

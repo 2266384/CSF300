@@ -16,7 +16,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('customer');
             $table->string('recipient_name');
-            $table->unsignedBigInteger('source');
+            $table->unsignedBigInteger('source_id');
+            $table->string('source_type');
             $table->date('consent_date')->nullable();
             $table->date('removed_date')->nullable();
             $table->boolean('active')->default(true);
@@ -24,9 +25,10 @@ return new class extends Migration
 
             $table->foreign('customer')->references('id')->on('customers')
                 ->onDelete('cascade');
-
+/*
             $table->foreign('source')->references('id')->on('sources')
                 ->onDelete('cascade');
+*/
         });
 
         /**

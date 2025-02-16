@@ -6,6 +6,7 @@ use function Pest\Laravel\post;
 use function Pest\Laravel\assertAuthenticatedAs;
 use function Pest\Laravel\assertGuest;
 
+
 // Refresh the database
 uses(RefreshDatabase::class);
 

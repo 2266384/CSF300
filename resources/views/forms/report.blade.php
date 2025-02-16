@@ -2,7 +2,7 @@
     <div class="col content">
 
 
-        <form id="report-issue" action="{{ route('send.email') }}" method="POST" action="{{ route('send.email') }}" enctype="multipart/form-data">
+        <form id="report-issue" action="{{ route('send.email') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="row">
                 <div class="form-group">
