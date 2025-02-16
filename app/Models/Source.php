@@ -53,4 +53,13 @@ class Source extends Model
         return $this->hasMany(Registration::class, 'id', 'source' );
     }
 
+    /**
+     * Polymorphic Relation for User to be recorded in Registration
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function registration_source() {
+        return $this->morphMany(Registration::class, 'source', 'source_type', 'source_id', 'id');
+    }
+
 }

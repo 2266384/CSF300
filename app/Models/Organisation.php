@@ -49,4 +49,14 @@ class Organisation extends Model
     public function representatives() {
         return $this->hasMany(Representative::class);
     }
+
+    /**
+     * Polymorphic Relation for User to be recorded in Registration
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function registration_source() {
+        return $this->morphMany(Registration::class, 'source', 'source_type', 'source_id', 'id');
+    }
+
 }

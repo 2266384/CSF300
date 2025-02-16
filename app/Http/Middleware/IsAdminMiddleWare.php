@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class IsAdminMiddleWare
 {
     /**
-     * Handle an incoming request.
+     * Checks to see if the user requesting access to a route is an Admin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */

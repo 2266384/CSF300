@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Customer;
+use App\Models\Organisation;
 use App\Models\Registration;
+use App\Models\Source;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -102,7 +104,7 @@ class CustomersTableSeeder extends Seeder
         /**
          * Add some random customers to the Registration Table
          */
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 50; $i++) {
 
             // Get a random customer id
             $customer = Customer::inRandomOrder()->first()->id;
@@ -115,7 +117,27 @@ class CustomersTableSeeder extends Seeder
             $registration = new Registration();
             $registration->customer = $customer;
             $registration->recipient_name = fake()->name;
-            $registration->source = 1;
+            $registration->source_id = Organisation::inRandomOrder()->first()->id;
+            $registration->source_type = Organisation::class;
+            $registration->active = !$hasRegistration;
+            $registration->save();
+        }
+
+        for ($i = 0; $i < 50; $i++) {
+
+            // Get a random customer id
+            $customer = Customer::inRandomOrder()->first()->id;
+
+            // Check if the customer already has a registration
+            $hasRegistration = Registration::where('customer', $customer)
+                ->where('active', true)
+                ->exists();
+
+            $registration = new Registration();
+            $registration->customer = $customer;
+            $registration->recipient_name = fake()->name;
+            $registration->source_id = Source::inRandomOrder()->first()->id;
+            $registration->source_type = Source::class;
             $registration->active = !$hasRegistration;
             $registration->save();
         }

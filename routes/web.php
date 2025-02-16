@@ -34,13 +34,16 @@ Auth::routes([
  */
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('login_home')->middleware('guest');
 
-
+// Need to put this behind middleware if it works from here
+Route::post('/bulkCustomer', [App\Http\Controllers\Api\CustomerController::class, 'updateAll'])->name('bulkUpdate');
 
 /*
  * Routes that need authorisation to access
  * Include in Middleware Group
  */
-Route::middleware(['auth'])->middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth'])
+    ->middleware('auth:sanctum')
+    ->group(function () {
 
     // Home screen Dashboard
     Route::get('/home', function () {
@@ -52,6 +55,14 @@ Route::middleware(['auth'])->middleware('auth:sanctum')->group(function () {
     Route::get('/test', function () {
         return view('test');
     });
+
+
+    // Bulk Updates - functionality to be finished
+    Route::get('/bulk', function () {
+        return view('bulk');
+    })->name('bulk');
+
+
 
     // Email form
     Route::get('/report', function () { return view('forms.report'); })->name('report');
@@ -90,7 +101,8 @@ Route::middleware(['auth'])->middleware('auth:sanctum')->group(function () {
 
 
 // User must be authorised and Admin to access these routes
-Route::middleware(['auth'])->middleware('auth:sanctum')
+Route::middleware(['auth'])
+    ->middleware('auth:sanctum')
     ->middleware(IsAdminMiddleWare::class)->group(function () {
 
     Route::view('/admin', 'admin')->name('admin');

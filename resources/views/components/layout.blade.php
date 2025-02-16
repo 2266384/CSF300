@@ -116,9 +116,9 @@
                             <!-- Bulk Update -->
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingBulkUpdate">
-                                    <a href="#" class="nav-link px-0 align-middle">
+                                    <a href="{{ route('bulk') }}" class="nav-link px-0 align-middle">
                                         <i class="fs-4 bi-upload"></i>
-                                        <span class="ms-1 d-none d-sm-inline">Bulk Update</span>
+                                        <span class="ms-1 d-none d-sm-inline">Bulk Update - TODO</span>
                                     </a>
                                 </h2>
                             </div>

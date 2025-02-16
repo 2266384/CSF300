@@ -41,8 +41,9 @@ class Property extends Model
      */
     // Return customers needs
     public function customer() {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class, 'occupier', 'id');
     }
+
 
     public function responsibility_of() {
         return $this->belongsTo(Responsibility::class);

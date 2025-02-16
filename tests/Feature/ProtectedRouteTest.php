@@ -5,8 +5,10 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\get;
 
+
 // Refresh the database before running
 uses(RefreshDatabase::class);
+
 
 // Load the Protected Routes dataset
 dataset('protected_routes', function () {

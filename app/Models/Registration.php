@@ -12,7 +12,8 @@ class Registration extends Model
     protected $fillable = [
         'customer',
         'recipient_name',
-        'source',
+        'source_id',
+        'source_type',
         'consent_date',
         'removed_date',
         'active'
@@ -53,8 +54,19 @@ class Registration extends Model
         return $this->hasMany(Service::class, 'registration_id', 'id');
     }
 
+/*
     public function registrationSource() {
         return $this->belongsTo(Source::class, 'source', 'id');
+    }
+*/
+
+    /**
+     * Function for returning the Polymorphic Relation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function source() {
+        return $this->morphTo();
     }
 
 }

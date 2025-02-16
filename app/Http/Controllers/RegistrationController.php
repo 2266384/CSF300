@@ -116,7 +116,8 @@ class RegistrationController extends Controller
             $registration = new Registration();
             $registration->customer = $customer_ref;
             $registration->recipient_name = $recipient_name;
-            $registration->source = Source::find($source)->id;
+            $registration->source_id = $source;
+            $registration->source_type = Source::class;
             $registration->active = true;
             $registration->consent_date = $consent_date;
             $registration->removed_date= $removed_date;
