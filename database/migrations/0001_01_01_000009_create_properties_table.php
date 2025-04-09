@@ -48,27 +48,17 @@ return new class extends Migration
             DB::statement( "ALTER TABLE properties
                 ADD PostcodeArea AS LEFT(Postcode,PATINDEX('%[^A-Za-z]%',Postcode+'0')-1),
                     Outcode AS LEFT(Postcode, CHARINDEX(' ', Postcode + ' ') - 1),
-                    Incode AS RIGHT(Postcode, LEN(Postcode) - CHARINDEX(' ', Postcode + ' ') + 1)
+                    Incode AS RIGHT(Postcode, LEN(Postcode) - CHARINDEX(' ', Postcode + ' ') + 1),
+                    FullAddress AS CONCAT_WS(',',
+                                            nullif([house_number],' ')
+                                            ,nullif([house_name],'')
+                                            ,nullif([street],'')
+                                            ,nullif([town],'')
+                                            ,nullif([parish],'')
+                                            ,nullif([county],'')
+                                            ,nullif([postcode],'')
+                                )
             ");
-
-
-            /**
-             * Function to remove non-alphanumeric characters - to be used during API Address Search
-             */
-            // Drop the function if it already exists
-            DB::statement("IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.RemoveNonAlphaNumeric') AND type = 'FN')
-                                    DROP FUNCTION dbo.RemoveNonAlphaNumeric;");
-
-            // Recreate the function
-            DB::statement("CREATE FUNCTION dbo.RemoveNonAlphaNumeric(@input NVARCHAR(MAX))
-                                    RETURNS NVARCHAR(MAX)
-                                    AS
-                                    BEGIN
-                                        WHILE PATINDEX('%[^a-zA-Z0-9]%', @input) > 0
-                                        SET @input = STUFF(@input, PATINDEX('%[^a-zA-Z0-9]%', @input), 1, '');
-
-                                        RETURN @input;
-                                    END");
 
 
         } else if ($db_type === 'mysql') {
@@ -103,33 +93,19 @@ return new class extends Migration
              */
             DB::statement("
                 ALTER TABLE properties
-                ADD COLUMN PostcodeArea VARCHAR(10) GENERATED ALWAYS AS (LEFT(Postcode, LOCATE('0', REGEXP_REPLACE(Postcode, '[A-Za-z]', '0') ) - 1)) STORED,
-                ADD COLUMN Outcode VARCHAR(10) GENERATED ALWAYS AS (LEFT(Postcode, LOCATE(' ', CONCAT(Postcode, ' ')) - 1)) STORED,
-                ADD COLUMN Incode VARCHAR(10) GENERATED ALWAYS AS (RIGHT(Postcode, CHAR_LENGTH(Postcode) - LOCATE(' ', CONCAT(Postcode, ' ')) + 1)) STORED
-            ");
-
-
-
-            /**
-             * Function to remove non-alphanumeric characters - to be used during API Address Search
-             */
-            DB::statement("
-                DROP FUNCTION IF EXISTS RemoveNonAlphaNumeric;
-            ");
-
-            DB::statement("
-                CREATE FUNCTION RemoveNonAlphaNumeric(input_text TEXT)
-                RETURNS TEXT DETERMINISTIC
-                BEGIN
-                    DECLARE output_text TEXT;
-                    SET output_text = input_text;
-                    
-                    WHILE output_text REGEXP '[^a-zA-Z0-9]' DO
-                        SET output_text = REGEXP_REPLACE(output_text, '[^a-zA-Z0-9]', '');
-                    END WHILE;
-                    
-                    RETURN output_text;
-                END
+                ADD COLUMN postcodearea VARCHAR(10) GENERATED ALWAYS AS (LEFT(postcode, LOCATE('0', REGEXP_REPLACE(postcode, '[A-Za-z]', '0') ) - 1)) STORED,
+                ADD COLUMN outcode VARCHAR(10) GENERATED ALWAYS AS (LEFT(postcode, LOCATE(' ', CONCAT(postcode, ' ')) - 1)) STORED,
+                ADD COLUMN incode VARCHAR(10) GENERATED ALWAYS AS (RIGHT(postcode, CHAR_LENGTH(postcode) - LOCATE(' ', CONCAT(postcode, ' ')) + 1)) STORED,
+                ADD COLUMN fulladdress VARCHAR(250) GENERATED ALWAYS AS (CONCAT_WS(',',
+                                            nullif(house_number,' ')
+                                            ,nullif(house_name,'')
+                                            ,nullif(street,'')
+                                            ,nullif(town,'')
+                                            ,nullif(parish,'')
+                                            ,nullif(county,'')
+                                            ,nullif(postcode,'')
+                                )
+                    ) STORED
             ");
 
         }

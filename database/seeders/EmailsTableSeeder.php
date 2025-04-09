@@ -15,18 +15,18 @@ class EmailsTableSeeder extends Seeder
     public function run(): void
     {
         $email = new Email();
-        $email->customer_id = Customer::all()->random()->id;
+        $email->customer_id = Customer::find(1)->id;
         $email->address = 'abc@123.com';
         $email->save();
 
         $email = new Email();
-        $email->customer_id = Customer::all()->random()->id;
+        $email->customer_id = Customer::find(3)->id;
         $email->address = 'bob@robert.co.uk';
         $email->default = true;
         $email->save();
 
         $email = new Email();
-        $email->customer_id = Customer::all()->random()->id;
+        $email->customer_id = Customer::find(5)->id;
         $email->address = 'info@xyz.org';
         $email->save();
 

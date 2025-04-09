@@ -15,9 +15,17 @@ class UsersTableSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Single Test User
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'User Test',
+            'email' => 'user@example.com',
+            'is_admin' => false,
+        ]);
+
+        // Single Admin User
+        User::factory()->create([
+            'name' => 'Admin Test',
+            'email' => 'admin@example.com',
             'is_admin' => true,
         ]);
     }

@@ -31,7 +31,7 @@ return new class extends Migration
          * The command changes depending on whether we're connecting to the PROD database (MS SQL)
          * or the TEST database (MySQL)
          */
-
+/*
         $db_type = DB::connection()->getDriverName();
 
         if ($db_type === 'sqlsrv') {
@@ -43,7 +43,7 @@ return new class extends Migration
                 ADD UNIQUE INDEX IX_telephones_customerid_isDefault (is_default_condition);
             ");
         }
-
+*/
     }
 
     /**

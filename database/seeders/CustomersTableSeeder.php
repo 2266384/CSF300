@@ -102,8 +102,50 @@ class CustomersTableSeeder extends Seeder
 
 
         /**
+         * Create some registrations for our test customers
+         */
+        $thisCustomer = 1;
+        $thisOrganisation = 1;
+
+        $registration = new Registration();
+        $registration->customer = $thisCustomer;
+        $registration->recipient_name = 'Recipient Name 1';
+        $registration->source_id = Organisation::find($thisOrganisation)->id;
+        $registration->source_type = Organisation::class;
+        $registration->active = true;
+        $registration->save();
+
+
+        $thisCustomer = 2;
+        $thisOrganisation = 2;
+
+        $registration = new Registration();
+        $registration->customer = $thisCustomer;
+        $registration->recipient_name = 'Recipient Name 2';
+        $registration->source_id = Organisation::find($thisOrganisation)->id;
+        $registration->source_type = Organisation::class;
+        $registration->active = true;
+        $registration->save();
+
+
+        $thisCustomer = 3;
+        $thisOrganisation = 1;
+
+        $registration = new Registration();
+        $registration->customer = $thisCustomer;
+        $registration->recipient_name = 'Recipient Name 3';
+        $registration->source_id = Organisation::find($thisOrganisation)->id;
+        $registration->source_type = Organisation::class;
+        $registration->active = true;
+        $registration->save();
+
+
+
+
+        /**
          * Add some random customers to the Registration Table
          */
+        /*
         for ($i = 0; $i < 50; $i++) {
 
             // Get a random customer id
@@ -141,6 +183,7 @@ class CustomersTableSeeder extends Seeder
             $registration->active = !$hasRegistration;
             $registration->save();
         }
+        */
 
     }
 }

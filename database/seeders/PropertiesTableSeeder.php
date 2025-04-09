@@ -21,7 +21,7 @@ class PropertiesTableSeeder extends Seeder
         $property->street = 'The Road';
         $property->town = 'The Town';
         $property->postcode = 'CF12 3AB';
-        $property->occupier = Customer::all()->random()->id;
+        $property->occupier = 1;
         $property->save();
 
         // House Number without Letter, without Town, with Occupier
@@ -30,7 +30,7 @@ class PropertiesTableSeeder extends Seeder
         $property->house_number = '7';
         $property->street = 'High Street';
         $property->postcode = 'NP8 1ZU';
-        $property->occupier = Customer::all()->random()->id;
+        $property->occupier = 2;
         $property->save();
 
         // House Number and Name, with Town, with Occupier
@@ -40,15 +40,25 @@ class PropertiesTableSeeder extends Seeder
         $property->house_name = 'White House';
         $property->street = 'Long Lane';
         $property->postcode = 'AB12 9DJ';
-        $property->occupier = Customer::all()->random()->id;
+        $property->occupier = 3;
         $property->save();
 
-        // House Number and no Occupier
+
         $property = new Property();
         $property->uprn = 2233445566;
         $property->house_number = '99';
         $property->street = 'The Avenue';
         $property->postcode = 'AB1 2GZ';
+        $property->occupier = 5;
+        $property->save();
+
+        $property = new Property();
+        $property->uprn = 3344556677;
+        $property->house_number = '3B';
+        $property->house_name = 'Flat 13';
+        $property->street = 'The Close';
+        $property->postcode = 'AB1 2GZ';
+        $property->occupier = 4;
         $property->save();
 
         Property::factory()->importcsv();

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Services\AttributeService;
 use Illuminate\Validation\Rules\Password;
+use Psr\Http\Client\ClientInterface;
+use GuzzleHttp\Client;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TokenService::class, function ($app) {
             return new TokenService();
         });
+
+        // Bind the PSR HTTP Client to Guzzle
+        $this->app->bind(ClientInterface::class, function () {
+            return new Client();
+        });
+
     }
 
     /**

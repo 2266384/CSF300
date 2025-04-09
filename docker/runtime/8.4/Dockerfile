@@ -6,7 +6,6 @@ ARG WWWGROUP
 ARG NODE_VERSION=22
 ARG MYSQL_CLIENT="mysql-client"
 ARG POSTGRES_VERSION=17
-ARG SQLSRV_VERSION=5.12.0
 
 WORKDIR /var/www/html
 
@@ -57,20 +56,6 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN if [ "$ACCEPT_EULA" = "Y" ]; then \
-    curl -sS https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc \
-    && curl -sS https://packages.microsoft.com/config/ubuntu/24.04/prod.list | tee /etc/apt/sources.list.d/mssql-release.list \
-    && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev \
-    && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc \
-    && pecl install pdo_sqlsrv-$SQLSRV_VERSION \
-    && printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php/8.4/mods-available/pdo_sqlsrv.ini \
-    && phpenmod pdo_sqlsrv \
-    && bash -c "source ~/.bashrc" \
-    && apt-get -y autoremove \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    ; fi
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.4
 

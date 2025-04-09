@@ -18,6 +18,7 @@ return [
 
     'driver' => env('SCOUT_DRIVER', 'meilisearch'),
 
+
     /*
     |--------------------------------------------------------------------------
     | Index Prefix
@@ -115,6 +116,12 @@ return [
     'algolia' => [
         'id' => env('ALGOLIA_APP_ID', ''),
         'secret' => env('ALGOLIA_SECRET', ''),
+        'index-settings' => [
+            // 'users' => [
+            //     'searchableAttributes' => ['id', 'name', 'email'],
+            //     'attributesForFaceting'=> ['filterOnly(email)'],
+            // ],
+        ],
     ],
 
     /*
@@ -199,5 +206,20 @@ return [
             // ],
         ],
     ],
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ElasticSearch Configuration
+    |--------------------------------------------------------------------------
+    */
+
+    'elasticsearch' => [
+        'host' => env('SCOUT_ELASTICSEARCH_HOST', 'http://localhost:9200'),
+        'user' => env('SCOUT_ELASTICSEARCH_USER', ''),
+        'pass' => env('SCOUT_ELASTICSEARCH_PASS', ''),
+    ],
+
 
 ];

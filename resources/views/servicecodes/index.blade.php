@@ -41,7 +41,7 @@
         @push('scripts')
             <script>
                 $(document).ready( function () {
-                    $('#need-code-table').DataTable({
+                    $('#service-code-table').DataTable({
                             autoWidth: false
                             ,pageLength: 25
                             ,lengthMenu: [10, 25, 50, 100]

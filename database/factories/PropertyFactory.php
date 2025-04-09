@@ -42,7 +42,8 @@ class PropertyFactory extends Factory
      * @return void
      */
     public function importcsv() {
-            $filepath = public_path('properties.csv');
+            $filepath = public_path('CSV PAF.csv');
+            //$filepath = public_path('properties.csv');
             Excel::import(new PropertiesImport, $filepath);
     }
 

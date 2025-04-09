@@ -24,7 +24,6 @@ return new class extends Migration
             $table->foreign('registration_id')->references('id')->on('registrations');
             $table->foreign('code')->references('code')->on('need_codes');
 
-
         });
 
         /**
@@ -49,6 +48,33 @@ return new class extends Migration
             DB::statement("
                 ALTER TABLE needs
                 SET (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.needs_history))
+            ");
+        } else if ($db_type === 'mysql') {
+
+            /*
+             * Add validfrom and validto datetime columns
+             * ValidFrom should default to the Current Timestamp when its created or updated
+             * ValidTo should always be 31st December 9999
+             */
+            DB::statement("
+            ALTER TABLE needs
+            ADD COLUMN valid_from DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            ADD COLUMN valid_to DATETIME DEFAULT '9999-12-31 23:59:59'
+            ");
+
+            /*
+             * Create trigger on the table to copy data to the needs_history table before updating the record
+             * The valid_from should be the valid_from date of the source table
+             * The valid_to should use the Current Timestamp so the records can be presented chronologically
+             */
+            DB::statement("
+            CREATE TRIGGER before_needs_update
+            BEFORE UPDATE ON needs
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO needs_history (id, registration_id, code, temp_end_date, active, lastupdate_id, lastupdate_type, valid_from, valid_to)
+                VALUES (OLD.id, OLD.registration_id, OLD.code, OLD.temp_end_date, OLD.active, OLD.lastupdate_id, OLD.lastupdate_type, OLD.valid_from, CURRENT_TIMESTAMP);
+            END;
             ");
         }
     }

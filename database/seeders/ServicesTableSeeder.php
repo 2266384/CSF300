@@ -18,7 +18,7 @@ class ServicesTableSeeder extends Seeder
     {
         // Service with Representative update
         $service = new Service();
-        $service->registration_id = Registration::all()->random()->id;
+        $service->registration_id = 2;
         $service->code = '16P';
         $service->temp_end_date = null;
         $service->lastupdate_id = 2;
@@ -27,8 +27,8 @@ class ServicesTableSeeder extends Seeder
 
         // Service with User update
         $service = new Service();
-        $service->registration_id = Registration::all()->random()->id;
-        $service->code = 'FBR';
+        $service->registration_id = 1;
+        $service->code = 'PAS';
         $service->temp_end_date = null;
         $service->lastupdate_id = 1;
         $service->lastupdate_type = User::class;

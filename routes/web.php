@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MetricsController;
+use App\Http\Controllers\MLRandomForestController;
 use App\Http\Controllers\NeedCodeController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\RegistrationController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailController;
 
 use App\Http\Middleware\IsAdminMiddleWare;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +30,17 @@ Auth::routes([
     ]);
 
 
+// Blade for testing - needs to be removed for final prod
+Route::get('/test2', function () {
+    return view('test2');
+});
+
+Route::get('/train', [MLRandomForestController::class, 'trainModel']);
+
+Route::get('/test-searchable', function () {
+    $property = Property::find(1);  // Use an existing property ID
+    dd($property->toSearchableArray());
+});
 
 /*
  * Routes that don't require authorisation
