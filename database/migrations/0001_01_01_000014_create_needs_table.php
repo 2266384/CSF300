@@ -84,9 +84,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Turn off System Versioning
-        DB::statement("ALTER TABLE needs SET (SYSTEM_VERSIONING = OFF)");
-        Schema::dropIfExists('needs');
-        Schema::dropIfExists('needs_history');
+
+        $db_type = DB::connection()->getDriverName();
+
+        if ($db_type === 'sqlsrv') {
+
+            // Turn off System Versioning
+            DB::statement("ALTER TABLE needs SET (SYSTEM_VERSIONING = OFF)");
+            Schema::dropIfExists('needs');
+            Schema::dropIfExists('needs_history');
+        }
     }
 };

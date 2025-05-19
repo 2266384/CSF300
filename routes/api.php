@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Route;
 
 //Route::middleware(['auth:sanctum', 'ability:read'])->get('/user', [\App\Http\Controllers\Api\UserController::class, 'index']);
 
+// Includes the internal.php configuration so that we can access the internal routes using the api/v1 path
+Route::prefix('internal')->group(function () {
+    require base_path('routes/internal.php');
+});
+
 
 // READ access authorisation group
 Route::middleware(['auth:sanctum', 'ability:read'])->group(function () {

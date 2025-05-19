@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\TestCounter;
 use App\Models\Customer;
 use App\Models\Organisation;
 use App\Models\Property;
@@ -16,6 +17,8 @@ uses(RefreshDatabase::class);
 
 
 beforeEach(function () {
+
+    $this->artisan('migrate:fresh');
 
     (new SourcesTableSeeder())->run();
 
@@ -118,6 +121,9 @@ beforeEach(function () {
  */
 it('gets redirected to the login page if not authenticated', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it gets redirected to the login page if not authenticated', TestCounter::$count));
+
     $response = $this->postJson('/api/v1/responsibilities', $this->validPayload);
 
     $response->assertStatus(401);
@@ -132,6 +138,9 @@ it('gets redirected to the login page if not authenticated', function () {
  * Second and Third Responsibility successful
  */
 it('returns a failure message and success message for multiple updates', function () {
+
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns a failure message and success message for multiple updates', TestCounter::$count));
 
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
@@ -167,6 +176,9 @@ it('returns a failure message and success message for multiple updates', functio
  */
 it('returns a failure message for non-existent postcodes', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns a failure message for non-existent postcodes', TestCounter::$count));
+
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
 
@@ -195,6 +207,9 @@ it('returns a failure message for non-existent postcodes', function () {
  * First and Second Responsibility updated successfully
  */
 it('returns a success message for multiple responsibility updates', function () {
+
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns a success message for multiple responsibility updates', TestCounter::$count));
 
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);

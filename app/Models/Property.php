@@ -60,6 +60,10 @@ class Property extends Model
         'occupier'
     ];
 
+    protected $casts = [
+        'vector' => 'array',
+    ];
+
     /**
      * The associated table
      */
@@ -86,5 +90,20 @@ class Property extends Model
 
     public function responsibility_of() {
         return $this->belongsTo(Responsibility::class);
+    }
+
+    public function getFulladdressAttribute(): string
+    {
+        return implode(', ',
+            array_filter([
+                $this->house_number,
+                $this->house_name,
+                $this->street,
+                $this->town,
+                $this->parish,
+                $this->county,
+                $this->postcode,
+            ])
+        );
     }
 }

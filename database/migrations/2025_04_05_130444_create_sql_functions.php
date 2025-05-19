@@ -66,22 +66,23 @@ return new class extends Migration
                                                                                     replace(
                                                                                         replace(
                                                                                             replace(
-                                                                                                replace(@input
-                                                                                                ,'STREET'       ,'ST')
-                                                                                            ,'ROAD'         ,'RD')
-                                                                                        ,'AVENUE'       ,'AVE')
-                                                                                    ,'LANE'         ,'LN')
-                                                                                ,'DRIVE'        ,'DR')
-                                                                            ,'CLOSE'        ,'CLS')
-                                                                        ,'CRESCENT'     ,'CRES')
-                                                                    ,'COURT'        ,'CT')
-                                                                ,'PLACE'        ,'PL')
-                                                            ,'TERRACE'      ,'TER')
-                                                        ,'GARDENS'      ,'GDNS')
-                                                    ,'GROVE'        ,'GR')
-                                                ,'SQUARE'       ,'SQ')
-                                            ,'PARK'         ,'PK')
-
+                                                                                                replace(
+                                                                                                    replace(@input
+                                                                                                    ,'STREET'       ,'ST')
+                                                                                                ,'ROAD'         ,'RD')
+                                                                                            ,'AVENUE'       ,'AVE')
+                                                                                        ,'LANE'         ,'LN')
+                                                                                    ,'DRIVE'        ,'DR')
+                                                                                ,'CLOSE'        ,'CLS')
+                                                                            ,'CRESCENT'     ,'CRES')
+                                                                        ,'COURT'        ,'CT')
+                                                                    ,'PLACE'        ,'PL')
+                                                                ,'TERRACE'      ,'TER')
+                                                            ,'GARDENS'      ,'GDNS')
+                                                        ,'GROVE'        ,'GR')
+                                                    ,'SQUARE'       ,'SQ')
+                                                ,'PARK'         ,'PK')
+                                            ,'YARD'         ,'YD'
                                         RETURN @output;
                                     END");
 
@@ -182,6 +183,64 @@ return new class extends Migration
                     RETURN output_text;
                 END
             ");
+
+            // Drop the function if it already exists
+            DB::statement("
+                DROP FUNCTION IF EXISTS LevenshteinDistance;
+            ");
+
+            // Recreate the function
+            DB::statement("
+            CREATE FUNCTION LevenshteinDistance(s1 VARCHAR(255), s2 VARCHAR(255))
+            RETURNS INT
+            DETERMINISTIC
+            BEGIN
+                DECLARE s1_len, s2_len, i, j, cost INT;
+                DECLARE last_diag, old_diag, insert_cost, delete_cost, replace_cost, min_cost INT;
+                DECLARE s1_char CHAR(1);
+                DECLARE cv0, cv1 TEXT;
+
+                SET s1_len = CHAR_LENGTH(s1);
+                SET s2_len = CHAR_LENGTH(s2);
+
+                -- Handle edge cases
+                IF s1_len = 0 THEN RETURN s2_len; END IF;
+                IF s2_len = 0 THEN RETURN s1_len; END IF;
+
+                SET cv1 = '';
+                SET i = 0;
+                WHILE i <= s2_len DO
+                    SET cv1 = CONCAT(cv1, i, ',');
+                    SET i = i + 1;
+                END WHILE;
+
+                SET i = 1;
+                WHILE i <= s1_len DO
+                    SET s1_char = SUBSTRING(s1, i, 1);
+                    SET cv0 = cv1;
+                    SET cv1 = CONCAT(i, ',');
+                    SET j = 1;
+
+                    WHILE j <= s2_len DO
+                        SET cost = IF(s1_char = SUBSTRING(s2, j, 1), 0, 1);
+
+                        SET insert_cost = CAST(NULLIF(SUBSTRING_INDEX(SUBSTRING_INDEX(cv1, ',', j), ',', -1), '') AS UNSIGNED) + 1;
+                        SET delete_cost = CAST(NULLIF(SUBSTRING_INDEX(SUBSTRING_INDEX(cv0, ',', j + 1), ',', -1), '') AS UNSIGNED) + 1;
+                        SET replace_cost = CAST(NULLIF(SUBSTRING_INDEX(SUBSTRING_INDEX(cv0, ',', j), ',', -1), '') AS UNSIGNED) + cost;
+
+                        SET min_cost = LEAST(insert_cost, delete_cost, replace_cost);
+                        SET cv1 = CONCAT(cv1, min_cost, ',');
+
+                        SET j = j + 1;
+                    END WHILE;
+
+                    SET i = i + 1;
+                END WHILE;
+
+                RETURN CAST(NULLIF(SUBSTRING_INDEX(SUBSTRING_INDEX(cv1, ',', s2_len + 1), ',', -1), '') AS UNSIGNED);
+            END;
+            ");
+
 
         }
 

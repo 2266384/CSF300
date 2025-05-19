@@ -379,6 +379,7 @@ ul.nav a:hover, ul.nav a:focus, ul.nav a:active, li.nav a:hover, li.nav a:focus,
 /********  Buttons *********/
 
 div#need-create-buttoncontainer,
+div#service-create-buttoncontainer,
 div#user-create-buttoncontainer,
 div#organisation-create-buttoncontainer,
 div#representative-create-buttoncontainer {
@@ -428,7 +429,8 @@ div#representative-create-buttoncontainer {
 #cancel-save-user > i,
 #cancel-show-user > i,
 #cancel-save-organisation > i,
-#cancel-save-representative > i,
+#cancel-show-organisation > i,
+#cancel-save-representative > i
 {
     color: $secondary-dwr-soft-red;
     margin-left: 0.25em;

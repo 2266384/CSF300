@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property;
+use App\Models\ThirdPartyUpdate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -36,6 +37,9 @@ class PropertyController extends Controller
                'Postcode' => $property->postcode,
            ];
         });
+
+        // Add a record of this request to the database table - we don't need the update ID for this
+        createThirdPartyUpdate($user->id, $request->getMethod(), $properties->count());
 
         return response()->json($properties);
     }
@@ -104,6 +108,9 @@ class PropertyController extends Controller
         } else {
             $singleProperty = null;
         };
+
+        // Add a record of this request to the database table - we don't need the update ID for this
+        createThirdPartyUpdate($user->id, $request->getMethod(), count($singleProperty));
 
         return response()->json($singleProperty);
 
@@ -175,8 +182,14 @@ class PropertyController extends Controller
             ],422);
         }
 
+        /**
+         * Add a record of this request to the database table
+         */
+        $thisUpdate = createThirdPartyUpdate($request->user()->id, $request->getMethod(), 0);
+
         // Return an error if the request doesn't have any parameters
         if(empty($request->query())) {
+
             return response()->json(['message' => 'No parameters provided'], 404);
         }
 
@@ -184,8 +197,22 @@ class PropertyController extends Controller
         $properties = matchProperties($request);
 
         if($properties->isEmpty()) {
+
+            createThirdPartyRecord(
+                $thisUpdate,
+                json_encode($data),
+                0,
+                'No properties found'
+            );
+
             return response()->json(['message' => 'No properties found'], 404);
         } else {
+
+            // Add the update_count to the record
+            ThirdPartyUpdate::where('id', $thisUpdate)->update([
+                'update_count' => $properties->count(),
+            ]);
+
             return response()->json($properties);
         }
 

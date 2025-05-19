@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\TestCounter;
 use App\Models\Customer;
 use App\Models\Organisation;
 use App\Models\Property;
@@ -97,6 +98,9 @@ beforeEach(function () {
  */
 it('gets redirected to the login page if not authenticated', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it gets redirected to the login page if not authenticated', TestCounter::$count));
+
     $response = $this->deleteJson("/api/v1/responsibility{$this->apiParam}");
 
     $response->assertStatus(401);
@@ -108,6 +112,9 @@ it('gets redirected to the login page if not authenticated', function () {
  * Tests deleting a responsibility for an authenticated user
  */
 it('returns an error message if the postcode is not registered', function () {
+
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns an error message if the postcode is not registered', TestCounter::$count));
 
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
@@ -130,6 +137,9 @@ it('returns an error message if the postcode is not registered', function () {
  */
 it('returns an error message if the postcode does not exist', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns an error message if the postcode does not exist', TestCounter::$count));
+
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
 
@@ -151,6 +161,9 @@ it('returns an error message if the postcode does not exist', function () {
  */
 it('returns a success message if the postcode is registered', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns a success message if the postcode is registered', TestCounter::$count));
+
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
 
@@ -165,4 +178,3 @@ it('returns a success message if the postcode is registered', function () {
         ]);
 
 });
-

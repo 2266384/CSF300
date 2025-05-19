@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();       //Model Name
             $table->longText('model_data');
+            $table->longText('all_labels')->nullable();
+            $table->longText('all_predictions')->nullable();
             $table->float('accuracy');
             $table->float('precision')->nullable();
             $table->float('recall')->nullable();

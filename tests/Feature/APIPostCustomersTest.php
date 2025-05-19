@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\TestCounter;
 use App\Models\Customer;
 use App\Models\Organisation;
 use App\Models\Property;
@@ -18,6 +19,8 @@ uses(RefreshDatabase::class);
 
 
 beforeEach(function () {
+
+    $this->artisan('migrate:fresh');
 
     (new SourcesTableSeeder())->run();
 
@@ -93,6 +96,7 @@ beforeEach(function () {
             'organisation_id' => 1,
             'active' => true]
     );
+
 
     // Variable for use in the different tests
     $this->validPayload = [
@@ -340,6 +344,9 @@ beforeEach(function () {
  */
 it('gets redirected to the login page if not authenticated', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it gets redirected to the login page if not authenticated', TestCounter::$count));
+
     $response = $this->postJson('/api/v1/customers', $this->validPayload);
 
     $response->assertStatus(401);
@@ -353,6 +360,9 @@ it('gets redirected to the login page if not authenticated', function () {
  * Second registration failed as no match to Property
  */
 it('returns a success message and an error message if one of the properties does not exist', function () {
+
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns a success message and an error message if one of the properties does not exist', TestCounter::$count));
 
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
@@ -386,6 +396,9 @@ it('returns a success message and an error message if one of the properties does
  */
 it('returns a success message and an error message if one of the customers does not match', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns a success message and an error message if one of the customers does not match', TestCounter::$count));
+
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
 
@@ -418,6 +431,9 @@ it('returns a success message and an error message if one of the customers does 
  */
 it('returns error messages for both updates', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns error messages for both updates', TestCounter::$count));
+
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
 
@@ -448,6 +464,9 @@ it('returns error messages for both updates', function () {
  * First and Second Customer updated successfully
  */
 it('returns a success message for multiple customer updates', function () {
+
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns a success message for multiple customer updates', TestCounter::$count));
 
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);

@@ -14,6 +14,8 @@ class MLModelStorage extends Model
     protected $fillable = [
         'name',
         'model_data',
+        'all_labels',
+        'all_predictions',
         'accuracy',
         'precision',
         'recall',

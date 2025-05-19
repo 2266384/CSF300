@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('county')->nullable();
             $table->string('postcode', 8);
             $table->unsignedBigInteger('occupier')->nullable();
+            $table->longText('vector')->nullable();
             $table->timestamps();
 
             $table->foreign('occupier')->references('id')->on('customers')

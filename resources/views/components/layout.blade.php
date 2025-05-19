@@ -105,7 +105,7 @@
                                                 <div class="input-group">
                                                     <input class="form-control border-end-0 border" type="search" name="search" placeholder="Search"
                                                            value="{{ session('searchQuery', '') }}" aria-label="Search">
-                                                    <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border ms-n5" type="submit">
+                                                    <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border ms-n5" id="search_button" type="submit">
                                                         <i class="bi bi-search"></i>
                                                     </button>
                                                 </div>

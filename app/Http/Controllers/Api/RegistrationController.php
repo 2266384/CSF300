@@ -8,6 +8,8 @@ use App\Models\Organisation;
 use App\Models\Registration;
 use App\Models\Property;
 use App\Models\Responsibility;
+use App\Models\ThirdPartyRecord;
+use App\Models\ThirdPartyUpdate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +44,7 @@ class RegistrationController extends Controller
             'recipient_name' => $request['recipient_name'],
             'consent_date' => $request['consent_date'],
             'needs' => $request['needs'],
+            'updateId' => $request['updateId'],
             ];
 
         // Extract temp need dates for validation and add them to the data array
@@ -101,6 +104,7 @@ class RegistrationController extends Controller
         $validator = Validator::make($data, $rules, $messages);
 
         if ($validator->fails()) {
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validation failed',
@@ -118,6 +122,21 @@ class RegistrationController extends Controller
 
 
     /**
+     * Add a record of this request to the database table if it wasn't passed by the request
+    */
+    $thisId = null;
+
+    if (isset($request['updateId'])) {
+
+        $thisId = $request['updateId'];
+
+    } else {
+
+        $thisId = createThirdPartyUpdate($user->id, $request->getMethod(), 0);
+
+    }
+
+    /**
      * Check to see if we have a matching property and throw an error if we don't
      */
 
@@ -128,6 +147,16 @@ class RegistrationController extends Controller
 
         // Throw an error if we can't match a property
         if($properties->isEmpty()) {
+
+            //dump($propertyRequest);
+
+            createThirdPartyRecord(
+                $thisId,
+                json_encode($data),
+                getNearestProperty($propertyRequest)->id ?? 0,      // Default to 0 if no nearest property returned
+                'Property match cannot be found: nearest property provided'
+            );
+
             return response()->json([
                 'status' => 422,
                 'message' => "Property match cannot be found"
@@ -162,6 +191,14 @@ class RegistrationController extends Controller
         }
 
         if($customerMatch === 'No Match') {
+
+            createThirdPartyRecord(
+                $thisId,
+                json_encode($data),
+                $properties->first()['ID'],
+                'Customer match cannot be found'
+            );
+
             return response()->json([
                 'status' => 422,
                 'message' => "Customer match cannot be found"
@@ -177,6 +214,14 @@ class RegistrationController extends Controller
 
         // Throw an error if there's already a registration
         if (!$registration->isEmpty()) {
+
+            createThirdPartyRecord(
+                $thisId,
+                json_encode($data),
+                $properties->first()['ID'],
+                'Customer already registered'
+            );
+
             return response()->json([
                 'status' => 422,
                 'message' => "Customer already registered"
@@ -238,6 +283,12 @@ class RegistrationController extends Controller
             addAttribute($need);
         }
 
+        createThirdPartyRecord(
+            $thisId,
+            json_encode($data),
+            $properties->first()['ID'],
+            'Registration created successfully'
+        );
 
         // Response JSON
         return response()->json([
@@ -278,13 +329,21 @@ class RegistrationController extends Controller
     public function storeAll(Request $request)
     {
 
+        /**
+         * Add a record of this request to the database table
+         */
+        $thisUpdate = createThirdPartyUpdate($request->user()->id, $request->getMethod(), 0);
+
         $requests = $request->all();
         $controller = app(RegistrationController::class);
 
         // Iterate the objects in the request and directly call the Controller to create them
-        $responses = collect($requests)->map(function ($item) use ($controller) {
+        $responses = collect($requests)->map(function ($item) use ($controller, $thisUpdate) {
 
+            // Add the update ID to the new request
+            $item['updateId'] = $thisUpdate;
             $internalRequest = new Request($item);
+
             $response = $controller->store($internalRequest);
 
             //return $response instanceof JsonResponse ? $response->getData(true) : $response;

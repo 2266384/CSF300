@@ -5,7 +5,7 @@
             <div class="p2 flex-grow-1">
                 <H2>{{ $representative->name }}</H2>
             </div>
-            <a href="{{ route('representatives.edit', $representative) }}" id="edit-user"><i class="bi bi-pencil-square fs-2"></i></a>
+            <a href="{{ route('representatives.edit', $representative) }}" id="update-representative"><i class="bi bi-pencil-square fs-2"></i></a>
             <a href="{{route('representatives.index')}}" id="cancel-save-representative" title="Cancel Update"><i class="bi bi-x-square-fill fs-2"></i></a>
         </div>
 

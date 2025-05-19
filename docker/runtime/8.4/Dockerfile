@@ -56,6 +56,8 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Set PHP memory limit to 12GB
+RUN mkdir -p /usr/local/etc/php/conf.d/ && echo "memory_limit=12G" > /usr/local/etc/php/conf.d/memory-limit.ini
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.4
 

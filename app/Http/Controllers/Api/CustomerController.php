@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\ThirdPartyRecord;
+use App\Models\ThirdPartyUpdate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -76,6 +78,10 @@ class CustomerController extends Controller
                 ];
             });
 
+
+        // Add a record of this request to the database table - we don't need the update ID for this
+        createThirdPartyUpdate($user->id, $request->getMethod(), $customers->count());
+
         return response()->json($customers);
 
     }
@@ -127,8 +133,27 @@ class CustomerController extends Controller
         // Get the properties if the Occupier ID matches the provided Customer ID
         $properties = $user->represents->responsible_for->where('occupier', $id);
 
+        /**
+         * Add a record of this request to the database table if it wasn't passed by the request
+         */
+        $thisId = null;
+
+        if (isset($request['updateId'])) {
+            $thisId = $request['updateId'];
+        } else {
+            $thisId = createThirdPartyUpdate($user->id, $request->getMethod(), 0);
+        }
+
         // If we don't have this customer in a property the organisation is responsible for return an error
         if($properties->isEmpty()) {
+
+            createThirdPartyRecord(
+                $thisId,
+                json_encode($data),
+                0,
+                'Customer not found'
+            );
+
             return response()->json([
                 'status' => 404,
                 'message' => 'Customer not found'
@@ -180,6 +205,11 @@ class CustomerController extends Controller
                     }),
                 ];
             });
+
+        // Add the update_count to the record
+        ThirdPartyUpdate::where('id', $thisId)->update([
+            'update_count' => $customers->count(),
+        ]);
 
         return response()->json($customers);
 
@@ -267,6 +297,17 @@ class CustomerController extends Controller
             ]);
         }
 
+        /**
+         * Add a record of this request to the database table if it wasn't passed by the request
+         */
+        $thisId = null;
+
+        if (isset($request['updateId'])) {
+            $thisId = $request['updateId'];
+        } else {
+            $thisId = createThirdPartyUpdate($request->user()->id, $request->getMethod(), 0);
+        }
+
         // Get the customer we're updating
         $customer = Customer::find($id);
 /*
@@ -293,6 +334,14 @@ class CustomerController extends Controller
 
 
         if (is_null($registration)) {
+
+            createThirdPartyRecord(
+                $thisId,
+                json_encode($data),
+                0,
+                'Customer does not have a live registration'
+            );
+
             return response()->json([
                 'status' => 422,
                 'message' => 'Customer does not have a live registration',
@@ -337,6 +386,13 @@ class CustomerController extends Controller
             }
         }
 
+        createThirdPartyRecord(
+            $thisId,
+            json_encode($data),
+            0,
+            'Customer updated successfully'
+        );
+
         // Response JSON
         return response()->json([
             'status' => 200,
@@ -363,11 +419,18 @@ class CustomerController extends Controller
         $requests = $request->all();
         $customerController = app(CustomerController::class);
 
+        /**
+         * Add a record of this request to the database table
+         */
+        $thisUpdate = createThirdPartyUpdate($request->user()->id, $request->getMethod(), 0);
 
         // Iterate the requests and call the controller directly for each
-        $responses = collect($requests)->map(function ($item) use ($customerController) {
+        $responses = collect($requests)->map(function ($item) use ($customerController, $thisUpdate) {
 
+            // Add the update ID to the new request
+            $item['updateId'] = $thisUpdate;
             $internalRequest = new Request($item);
+
             $response = $customerController->update($internalRequest, $item['id']);
 
             //return $response instanceof JsonResponse ? $response->getData(true) : $response;

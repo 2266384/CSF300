@@ -3,7 +3,6 @@
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MetricsController;
-use App\Http\Controllers\MLRandomForestController;
 use App\Http\Controllers\NeedCodeController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\RegistrationController;
@@ -35,7 +34,6 @@ Route::get('/test2', function () {
     return view('test2');
 });
 
-Route::get('/train', [MLRandomForestController::class, 'trainModel']);
 
 Route::get('/test-searchable', function () {
     $property = Property::find(1);  // Use an existing property ID
@@ -103,7 +101,9 @@ Route::middleware(['auth'])
     Route::post('/organisation-update', [OrganisationController::class, 'update']);
 
     Route::get('/search', [CustomerController::class, 'search'])->name('search');
-    Route::get('/actions', [AttributeController::class, 'actions'])->name('actions');
+
+    // Check all functionality works without this route
+    //Route::get('/actions', [AttributeController::class, 'actions'])->name('actions');
 
 
 

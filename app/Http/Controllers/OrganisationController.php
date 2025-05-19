@@ -39,15 +39,15 @@ class OrganisationController extends Controller
             ];
 
             $rules = [
-                'name' => 'required|string|min:5|max:255',   // Ensures the need code is unique
-                'active' => 'required|boolean',
+                'name' => 'required|string|min:5|max:255',
+                //'active' => 'sometimes|boolean',
             ];
 
             $messages = [
                 'name.required' => 'Organisation name is required',
                 'name.min' => 'Organisation name must be at least 5 characters',
                 'name.max' => 'Organisation name cannot be longer than 255 characters',
-                'active.required' => 'Active status is required',
+                //'active.required' => 'Active status is required',
             ];
 
             $validator = Validator::make($data, $rules, $messages);
@@ -62,7 +62,7 @@ class OrganisationController extends Controller
 
             $organisation = new Organisation();
             $organisation->name = $data['name'];
-            $organisation->active =$data['active'];
+            $organisation->active =$data['active'] ?? 0;    // Defaults Active to False if not provided
             $organisation->save();
 
             // Set the redirect based on whether the registration has been removed or not
@@ -127,7 +127,7 @@ class OrganisationController extends Controller
             $rules = [
                 'id' => 'required|numeric|exists:organisations,id',
                 'name' => 'required|string|min:5|max:255',
-                'active' => 'required|boolean',
+                //'active' => 'sometimes|boolean',
                 'propertyData' => 'sometimes|array',
             ];
 
@@ -138,7 +138,7 @@ class OrganisationController extends Controller
                 'name.required' => 'Organisation name is required',
                 'name.min' => 'Organisation name must be at least 5 characters',
                 'name.max' => 'Organisation name cannot be longer than 255 characters',
-                'active.required' => 'Active status is required',
+                //'active.required' => 'Active status is required',
                 'propertyData.required' => 'Property data is required',
                 'propertyData.array' => 'Property data must be an array',
             ];
@@ -190,7 +190,7 @@ class OrganisationController extends Controller
 
             $update = $organisation;
             $update->name = $data['name'];
-            $update->active = $data['active'];
+            $update->active = $data['active'] ?? 0;
             $update->save();
 
             // Set the redirect based on whether the registration has been removed or not

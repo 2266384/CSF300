@@ -1,10 +1,12 @@
 <?php
 
+use App\Helpers\TestCounter;
 use App\Models\Customer;
 use App\Models\Organisation;
 use App\Models\Property;
 use App\Models\Representative;
 use App\Models\Responsibility;
+use Illuminate\Support\Facades\Artisan;
 use Laravel\Sanctum\Sanctum;
 use Database\Seeders\NeedCodesTableSeeder;
 use Database\Seeders\ServiceCodesTableSeeder;
@@ -12,12 +14,12 @@ use Database\Seeders\SourcesTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 
-
 // Refresh the database before running
 uses(RefreshDatabase::class);
 
-
 beforeEach(function () {
+
+    $this->artisan('migrate:fresh');
 
     (new SourcesTableSeeder())->run();
 
@@ -164,6 +166,9 @@ beforeEach(function () {
  */
 it('gets redirected to the login page if not authenticated', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it gets redirected to the login page if not authenticated', TestCounter::$count));
+
     $response = $this->postJson('/api/v1/customer', $this->validPayload);
 
     $response->assertStatus(401);
@@ -176,6 +181,9 @@ it('gets redirected to the login page if not authenticated', function () {
  */
 it('returns an error if the property does not exist', function () {
 
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns an error if the property does not exist', TestCounter::$count));
+
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
 
@@ -184,10 +192,10 @@ it('returns an error if the property does not exist', function () {
     //dump($response->json());
 
     $response->assertStatus(200)
-    ->assertJson([
-        "status" => 422,
-        "message" => "Property match cannot be found",
-    ]);
+        ->assertJson([
+            "status" => 422,
+            "message" => "Property match cannot be found",
+        ]);
 
 });
 
@@ -196,6 +204,9 @@ it('returns an error if the property does not exist', function () {
  * Tests an authenticated user can't create a registration with an invalid customer
  */
 it('returns an error if the occupier details do not match', function () {
+
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it returns an error if the occupier details do not match', TestCounter::$count));
 
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);
@@ -217,6 +228,9 @@ it('returns an error if the occupier details do not match', function () {
  * Tests an authenticated user can retrieve a valid JSON response
  */
 it('allows an authenticated user to create a Customer Registration', function () {
+
+    TestCounter::$count++;
+    dump(sprintf('Test %03d - Testing it allows an authenticated user to create a Customer Registration', TestCounter::$count));
 
     // Authenticate using Sanctum with read ability
     Sanctum::actingAs(Representative::find(1), ['read', 'write']);

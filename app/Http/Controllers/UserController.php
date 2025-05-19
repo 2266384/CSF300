@@ -69,10 +69,10 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             // Catch any exceptions and return an error response
-            return response()->json([
-                'error' => 'An error occurred while processing the request.',
-                'details' => $e->getMessage()
-            ], 500);
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -103,14 +103,13 @@ class UserController extends Controller
         $request->validate([
             'user-name' => 'required|max:255',
             'user-email' => 'required|email|max:255',
-            'user-isadmin' => 'required|boolean',
+            'user-isadmin' => 'sometimes|boolean',
         ],
         [
             'user-name.required' => 'User name is required',
             'user-email.required' => 'User email is required',
             'user-email.max' => 'User email must be less than 255 characters',
             'user-email.email' => 'User email is not valid',
-            'user-isadmin.required' => 'Admin is required',
         ]);
 
         $input = $request->all();
@@ -120,7 +119,7 @@ class UserController extends Controller
         $update = $user;
         $update->name = $input['user-name'];
         $update->email = $input['user-email'];
-        $update->is_admin = $input['user-isadmin'];
+        $update->is_admin = $input['user-isadmin'] ?? false;        // Default to False
         $update->save();
 
         return redirect()

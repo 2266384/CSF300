@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Property;
+use App\Observers\PropertyObserver;
 use App\Services\CustomerService;
 use App\Services\TokenService;
 use Illuminate\Pagination\Paginator;
@@ -51,6 +53,12 @@ class AppServiceProvider extends ServiceProvider
                 ->symbols();
         });
 
+
+        // Register the PropertyObserver
+        Property::observe(PropertyObserver::class);
+
+
+        /* Add View Composers to include services */
         View::composer('customers.show', function ($view) {
             $view->with(['attributeService' => new AttributeService()]);
         });

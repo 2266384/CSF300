@@ -84,9 +84,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Turn off System Versioning
-        DB::statement("ALTER TABLE services SET (SYSTEM_VERSIONING = OFF)");
-        Schema::dropIfExists('services');
-        Schema::dropIfExists('services_history');
+
+        $db_type = DB::connection()->getDriverName();
+
+        if ($db_type === 'sqlsrv') {
+
+            // Turn off System Versioning
+            DB::statement("ALTER TABLE services SET (SYSTEM_VERSIONING = OFF)");
+            Schema::dropIfExists('services');
+            Schema::dropIfExists('services_history');
+        }
     }
 };
