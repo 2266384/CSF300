@@ -9,8 +9,8 @@
             <div class="p2 flex-grow-1">
                 <H2>{{ $organisation->name }}</H2>
             </div>
-            <a href="{{ route('organisations.edit', $organisation) }}" id="edit-user"><i class="bi bi-pencil-square fs-2"></i></a>
-            <a href="{{route('organisations.index')}}" id="cancel-show-user" title="Cancel Show"><i class="bi bi-x-square-fill fs-2"></i></a>
+            <a href="{{ route('organisations.edit', $organisation) }}" id="update-organisation"><i class="bi bi-pencil-square fs-2"></i></a>
+            <a href="{{route('organisations.index')}}" id="cancel-show-organisation" title="Cancel Show"><i class="bi bi-x-square-fill fs-2"></i></a>
         </div>
 
         <div>

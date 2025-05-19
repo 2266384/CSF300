@@ -39,7 +39,7 @@
         @push('scripts')
             <script>
                 $(document).ready( function () {
-                    $('#organisations-table').DataTable({
+                    $('#representatives-table').DataTable({
                             autoWidth: false
                             ,pageLength: 25
                             ,lengthMenu: [10, 25, 50, 100]

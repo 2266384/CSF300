@@ -10,5 +10,5 @@ return [
     'customers-edit' => '/customers/1/edit',
     'registrations-create' => '/registrations/create/1',
     'search-JS' => '/search',
-    'actions-JS' => '/actions',
+    //'actions-JS' => '/actions',
 ];

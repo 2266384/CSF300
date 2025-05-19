@@ -5,19 +5,20 @@ services:
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-                ACCEPT_EULA: '${ACCEPT_EULA}'   # Accept the EULA to compile
         image: 'sail-8.4/app'
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
             - '${APP_PORT:-80}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        mem_limit: 4g
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
             XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
             XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
+            PHP_MEMORY_LIMIT: '12G'
         volumes:
             - '.:/var/www/html'
         networks:
@@ -39,6 +40,7 @@ services:
             MYSQL_USER: '${DB_USERNAME}'
             MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        command: --max_allowed_packet=256M      # Increase Max Allowed Packet so we can store the ML Model
         volumes:
             - 'sail-mysql:/var/lib/mysql'
             - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
@@ -101,45 +103,6 @@ services:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
-        # Microsoft SQL Server
-    sqlsrv:
-        image: 'mcr.microsoft.com/mssql/server:2022-latest'
-        # image: 'mcr.microsoft.com/azure-sql-server' # Uncomment if ARM64
-        ports:
-            # Forward the database port to the host
-            - '${FORWARD_DB_PORT:-1433}:1433'
-        environment:
-            # Add a default Super Admin password that is strong
-            MSSQL_SA_PASSWORD: '${DB_ROOT_PASSWORD}'
-            # The default Database Name to connect to.
-            MSSQL_DB_NAME: '${DB_DATABASE}'
-            # The default Database User to connect as.
-            MSSQL_USER: '${DB_USERNAME}'
-            # The Database User Password (not the super admin).
-            MSSQL_PASSWORD: '${DB_PASSWORD}'
-            # Accept the EULA, or fail at running.
-            ACCEPT_EULA: '${ACCEPT_EULA}'
-        volumes:
-            # Create a volume for persistence
-            - 'sail-sqlsrv:/var/opt/mssql'
-            # Use a custom custom entrypoint
-            - '.devcontainer/entrypoint.sh:/entrypoint.sh'
-        networks:
-            - sail
-        entrypoint: '/entrypoint.sh'
-        healthcheck:
-            # This simple test checks for the port availability, works on
-            # on both x64 and ARM64 versions of Azure Edge SQL, plus the
-            # x64 version of Microsoft SQL Server.
-            test:
-                - CMD
-                - 'timeout'
-                - '1'
-                - 'bash'
-                - '-c'
-                - 'cat < /dev/null > /dev/tcp/127.0.0.1/1433'
-            timeout: 5s
-            retries: 3
 networks:
     sail:
         driver: bridge

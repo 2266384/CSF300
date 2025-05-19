@@ -16,11 +16,11 @@
                 <div>
                     <div class="form-group col-md-4">
                         <label for="username">Name:</label>
-                        <input type="text" class="form-control" id="username" name="user-name" value="{{ old('username') }}">
+                        <input type="text" class="form-control" id="username" name="user-name" value="{{ old('user-name') }}">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="useremail">Email:</label>
-                        <input type="email" class="form-control" id="useremail" name="user-email" value="{{ old('useremail') }}">
+                        <input type="email" class="form-control" id="useremail" name="user-email" value="{{ old('user-email') }}">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="userpassword">Password:</label>

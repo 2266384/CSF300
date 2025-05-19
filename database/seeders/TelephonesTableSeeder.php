@@ -15,7 +15,7 @@ class TelephonesTableSeeder extends Seeder
     public function run(): void
     {
         $telephone = new Telephone();
-        $telephone->customer_id = Customer::inRandomOrder()->first()->id;
+        $telephone->customer_id = 1;
         $telephone->std = '00000';
         $telephone->number = '000000';
         $telephone->type = 'Work';
@@ -23,7 +23,7 @@ class TelephonesTableSeeder extends Seeder
         $telephone->save();
 
         $telephone = new Telephone();
-        $telephone->customer_id = Customer::inRandomOrder()->first()->id;
+        $telephone->customer_id = 2;
         $telephone->std = '01234';
         $telephone->number = '567890';
         $telephone->type = 'Home';
@@ -31,7 +31,7 @@ class TelephonesTableSeeder extends Seeder
         $telephone->save();
 
         $telephone = new Telephone();
-        $telephone->customer_id = Customer::inRandomOrder()->first()->id;
+        $telephone->customer_id = 2;
         $telephone->std = '07777';
         $telephone->number = '777777';
         $telephone->type = 'Mobile';

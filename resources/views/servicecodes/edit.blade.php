@@ -3,7 +3,7 @@
 
         <div class="d-flex">
             <div class="p2 flex-grow-1">
-                <H2>Edit Need Code:</H2>
+                <H2>Edit Service Code:</H2>
             </div>
             <button type="button" id="save-service" class="btn p-0 border-0 bg-transparent" title="Save Update"><i class="bi bi-floppy fs-2"></i></button>
             <a href="{{route('servicecodes.index')}}" id="cancel-save-service" title="Cancel Update"><i class="bi bi-x-square-fill fs-2"></i></a>

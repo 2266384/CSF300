@@ -1,31 +1,31 @@
-UPRN,HouseNumber,HouseName,Street,Town,Parish,County,Postcode
-1234567891,87,,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
-1234567892,32,,Fake Street,Fake Town,,,FK12 3AB
-1234567893,90,,Fake Street,Fake Town,,,FK12 3AB
-1234567894,90,,Fake Street,Fake Town,,,FK12 3AB
-1234567895,9A,Cartref,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
-1234567896,,House,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
-1234567897,,The Manse,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
-1234567898,,The Shoe,Fake Street,Fake Town,,,FK12 3AB
-1234567899,,Big Pile,Fake Street,,,,FK12 3AB
-1234567900,78,,Fake Street,,,,FK12 3AB
-1234567901,84,,Fake Street,,,,FK12 3AB
-1234567902,37,,Fake Street,Fake Town,,,FK12 3AB
-1234567903,3C,,Fake Street,Fake Town,,,FK12 3AB
-1234567904,42,,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
-1234567905,Flat 1,Nakatomi Plaza,Fake Street,,Fake Parish,Fake County,FK12 3AB
-1234567906,65,,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
-1234567907,53,Mansion House,Fake Street,Fake Town,,,FK12 3AB
-1234567908,43,,Fake Street,Fake Town,,,FK12 3AB
-1234567909,156,,Fake Street,Fake Town,,,FK12 3AB
-1234567910,12,,Fake Street,,,,FK12 3AB
-1234567911,42,,Fake Street,Fake Town,,,FK12 3AB
-1234567912,80,,Fake Street,Fake Town,,,FK12 3AB
-1234567913,Flat 4,Block 1,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
-1234567914,3,,Fake Street,,Fake Parish,Fake County,FK12 3AB
-1234567915,89,,Fake Street,,Fake Parish,Fake County,FK12 3AB
-1234567916,8,,Fake Street,,,,FK12 3AB
-1234567917,12,,Fake Street,Fake Town,,,FK12 3AB
-1234567918,79,,Fake Street,Fake Town,,,FK12 3AB
-1234567919,38,,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
-1234567920,65,,Fake Street,Fake Town,Fake Parish,Fake County,FK12 3AB
+Postcode,PostTown,DependentLocality,DoubleDependentLocality,Thoroughfare,DependentThoroughfare,BuildingNumber,BuildingName,SubBuildingName,POBox,DepartmentName,OrganisationName,UDPRN,PostcodeType,SUOrganisationIndex,DeliveryPointSuffix
+CF12 3AB,Fake County,Fake Parish,Fake Town,Fake Street,,87,,,,,,1234567891,,,
+NP8 1ZU,,,Fake Town,Fake Street,,32,,,,,,1234567892,,,
+NP8 1ZU,,,Fake Town,Fake Street,,90,,,,,,1234567893,,,
+AB12 9DJ,,,Fake Town,Fake Street,,90,,,,,,1234567894,,,
+CF12 3AB,Fake County,Fake Parish,Fake Town,Fake Street,,9A,Cartref,,,,,1234567895,,,
+NP8 1ZU,Fake County,Fake Parish,Fake Town,Fake Street,,,House,,,,,1234567896,,,
+AB1 2GZ,Fake County,Fake Parish,Fake Town,Fake Street,,,The Manse,,,,,1234567897,,,
+AB1 2GZ,,,Fake Town,Fake Street,,,The Shoe,,,,,1234567898,,,
+FK12 3AB,,,,Fake Street,,,Big Pile,,,,,1234567899,,,
+CF12 3AB,,,,Fake Street,,78,,,,,,1234567900,,,
+AB12 9DJ,,,,Fake Street,,84,,,,,,1234567901,,,
+NP8 1ZU,,,Fake Town,Fake Street,,37,,,,,,1234567902,,,
+CF12 3AB,,,Fake Town,Fake Street,,3C,,,,,,1234567903,,,
+AB1 2GZ,Fake County,Fake Parish,Fake Town,Fake Street,,42,,,,,,1234567904,,,
+FK12 3AB,Fake County,Fake Parish,,Fake Street,,Flat 1,Nakatomi Plaza,,,,,1234567905,,,
+NP8 1ZU,Fake County,Fake Parish,Fake Town,Fake Street,,65,,,,,,1234567906,,,
+NP8 1ZU,,,Fake Town,Fake Street,,53,Mansion House,,,,,1234567907,,,
+FK12 3AB,,,Fake Town,Fake Street,,43,,,,,,1234567908,,,
+CF12 3AB,,,Fake Town,Fake Street,,156,,,,,,1234567909,,,
+AB12 9DJ,,,,Fake Street,,12,,,,,,1234567910,,,
+FK12 3AB,,,Fake Town,Fake Street,,42,,,,,,1234567911,,,
+FK12 3AB,,,Fake Town,Fake Street,,80,,,,,,1234567912,,,
+CF12 3AB,Fake County,Fake Parish,Fake Town,Fake Street,,Flat 4,Block 1,,,,,1234567913,,,
+CF12 3AB,Fake County,Fake Parish,,Fake Street,,3,,,,,,1234567914,,,
+CF12 3AB,Fake County,Fake Parish,,Fake Street,,89,,,,,,1234567915,,,
+FK12 3AB,,,,Fake Street,,8,,,,,,1234567916,,,
+NP8 1ZU,,,Fake Town,Fake Street,,12,,,,,,1234567917,,,
+FK12 3AB,,,Fake Town,Fake Street,,79,,,,,,1234567918,,,
+AB1 2GZ,Fake County,Fake Parish,Fake Town,Fake Street,,38,,,,,,1234567919,,,
+FK12 3AB,Fake County,Fake Parish,Fake Town,Fake Street,,65,,,,,,1234567920,,,

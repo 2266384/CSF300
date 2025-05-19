@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailController;
 
 use App\Http\Middleware\IsAdminMiddleWare;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,16 @@ Auth::routes([
     ]);
 
 
+// Blade for testing - needs to be removed for final prod
+Route::get('/test2', function () {
+    return view('test2');
+});
+
+
+Route::get('/test-searchable', function () {
+    $property = Property::find(1);  // Use an existing property ID
+    dd($property->toSearchableArray());
+});
 
 /*
  * Routes that don't require authorisation
@@ -90,7 +101,9 @@ Route::middleware(['auth'])
     Route::post('/organisation-update', [OrganisationController::class, 'update']);
 
     Route::get('/search', [CustomerController::class, 'search'])->name('search');
-    Route::get('/actions', [AttributeController::class, 'actions'])->name('actions');
+
+    // Check all functionality works without this route
+    //Route::get('/actions', [AttributeController::class, 'actions'])->name('actions');
 
 
 

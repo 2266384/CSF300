@@ -5,11 +5,34 @@
          colors="true"
 >
     <testsuites>
+<!--
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
         </testsuite>
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
+        </testsuite>
+-->
+        <testsuite name="CustomOrder">
+            <file>tests/Feature/RouteTest.php</file>
+
+            <file>tests/Feature/APIGetCustomerTest.php</file>
+            <file>tests/Feature/APIPostCustomerTest.php</file>
+            <file>tests/Feature/APIPutCustomerTest.php</file>
+
+            <file>tests/Feature/APIGetCustomersTest.php</file>
+            <file>tests/Feature/APIPostCustomersTest.php</file>
+            <file>tests/Feature/APIPutCustomersTest.php</file>
+
+            <file>tests/Feature/APIGetPropertiesTest.php</file>
+
+            <file>tests/Feature/APIGetPropertyTest.php</file>
+
+            <file>tests/Feature/APIDeleteResponsibilitiesTest.php</file>
+            <file>tests/Feature/APIPostResponsibilitiesTest.php</file>
+
+            <file>tests/Feature/APIDeleteResponsibilityTest.php</file>
+            <file>tests/Feature/APIPostResponsibilityTest.php</file>
         </testsuite>
     </testsuites>
     <source>

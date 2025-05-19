@@ -105,7 +105,7 @@
                                                 <div class="input-group">
                                                     <input class="form-control border-end-0 border" type="search" name="search" placeholder="Search"
                                                            value="{{ session('searchQuery', '') }}" aria-label="Search">
-                                                    <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border ms-n5" type="submit">
+                                                    <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border ms-n5" id="search_button" type="submit">
                                                         <i class="bi bi-search"></i>
                                                     </button>
                                                 </div>
@@ -148,12 +148,12 @@
                                     </div>
                                 </div>
 
-                                <!-- RMetrics -->
+                                <!-- Metrics -->
                                 <div class="accordion-item">
                                     <p class="accordion-header" id="viewMetrics">
                                         <a href="{{ route('metrics.index') }}" class="nav-link align-middle px-0">
                                             <i class="fs-4 bi-bar-chart"></i>
-                                            <span class="ms-1 d-none d-sm-inline">Metrics</span>
+                                            <span class="ms-1 d-none d-sm-inline">Metrics - TODO</span>
                                         </a>
                                     </p>
                                 </div>
@@ -169,7 +169,8 @@
                                 </p>
                             </div>
 
-                            <!-- Report an Issue -->
+                            <!-- Sample Dropdown -->
+                        <!--
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="sampleHeading">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -189,8 +190,9 @@
                                     </div>
                                 </div>
                             </div>
-
+                        -->
                             <!-- Customers -->
+                        <!--
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingCustomers">
                                     <a href="#" class="nav-link px-0 align-middle">
@@ -199,6 +201,7 @@
                                     </a>
                                 </h2>
                             </div>
+                        -->
                         </div>
                         <hr>
                     </div>

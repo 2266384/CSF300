@@ -17,20 +17,37 @@ class PropertiesImport implements ToModel, WithChunkReading, WithHeadingRow
     */
     public function model(array $row)
     {
+
+        //dd($row);
+
+        // Check if we have a street and skip the property import if we don't
+        if (empty($row['thoroughfare'])) {
+            return null;
+        }
+
         return new Property([
-            'uprn' => $row['uprn'],
-            'house_number' => $row['housenumber'],
-            'house_name' => $row['housename'],
-            'street' => $row['street'],
-            'town' => $row['town'],
-            'parish' => $row['parish'],
-            'county' => $row['county'],
+            'uprn' => $row['udprn'],
+            'house_number' => $row['buildingnumber'],
+            'house_name' => empty($row['buildingname']) && empty($row['subbuildingname'])
+                ? ''
+                : (empty($row['buildingname'])
+                    ? $row['subbuildingname']
+                    : (empty($row['subbuildingname'])
+                        ? $row['buildingname']
+                        : implode(', ', [$row['buildingname'], $row['subbuildingname']])
+                    )
+                ),
+            'street' => $row['thoroughfare'],
+            'town' => $row['doubledependentlocality'],
+            'parish' => $row['dependentlocality'],
+            'county' => $row['posttown'],
             'postcode' => $row['postcode'],
         ]);
+
     }
 
     public function chunkSize(): int {
-        return 100;
+        return 10000;
     }
 
     public function headingRow(): int{
